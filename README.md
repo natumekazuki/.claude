@@ -19,6 +19,7 @@
 | `skills/` | 変更testの価値審査、Session Graph、UI設計、RelayGraph、日本語技術文書、自然な日本語の個人Skill |
 | `hooks/implementation-restraint.ps1` | SessionStart・UserPromptSubmit・SubagentStartへ共通ルールの短い再通知を返す |
 | `settings.example.json` | model・effort・権限・委譲設定・個人hookの登録例。実設定はGit管理しない`settings.json`へ必要な項目だけ反映する |
+| `mcp.example.json` | 個人MCPの登録例。実登録はuser scopeの`~/.claude.json`に置き、認証・Session固有値は保存しない |
 
 共通ルールと個人Skillはユーザーhome直下の`~/.claude/`に配置する。`docs/`の詳細を一括importせず、`CLAUDE.md`の読む条件に応じて参照する。Skill内のscript・reference・assetは同じSkillの実pathから解決し、別repositoryのコピーへ依存しない。
 
@@ -26,7 +27,7 @@
 
 変更testの審査は`docs/guides/test-changes.md`の必須条件に従う。runtimeに`review-test-value` Skillやread-only委譲手段が提供されていなければ、審査を免除せず、その審査に依存する作業・完了判断を未完了として報告する。
 
-model・effortと担当、権限の設定例は下記に定める。MCP接続とauto memoryは利用中の端末local設定に従う。再通知hookはcontextを返すだけで、権限を付与したり操作を代理実行したりしない。
+model・effortと担当、権限、MCPの設定例は下記に定める。auto memoryは利用中の端末local設定に従う。再通知hookはcontextを返すだけで、権限を付与したり操作を代理実行したりしない。
 
 配置・更新後は新しいClaude Codeセッションで個人`CLAUDE.md`の読込、`/skills`の実path・重複・明示起動policy、`/hooks`のtrust・登録・出力を確認する。静的な配置確認と実際のルール適用・Skill起動を区別し、未実施のruntime確認を成功扱いしない。
 
@@ -46,6 +47,35 @@ model・effortと担当、権限の設定例は下記に定める。MCP接続と
 [Claude公式のsandbox仕様](https://code.claude.com/docs/en/sandboxing)ではNative Windowsのshell commandはOS sandboxなしで実行される。承認したcommandとその子processを、CodexのWindows elevated sandboxのように作業範囲へ隔離できない。Read/Editのpath規則やcommand文字列の許可規則も、任意のscriptや子processのfilesystem・networkアクセスを隔離する代替にはならない。非対応環境で隔離済みと見せるsandbox設定は置かない。同等のOS隔離が必要な運用では、WSL2・container等の対応環境とそのsandbox設定を別途選定する。
 
 設定例は個人の開始値であり、managed policyを置換しない。project/local設定、CLI・host指定等が実効値へ影響する。[設定の優先順位](https://code.claude.com/docs/en/settings#settings-precedence)に従い、新しいsessionで`/status`と`/permissions`から読込元・mode・規則を確認する。起動成功と、承認dialogや隔離の実動作確認は分ける。
+
+## MCP接続
+
+個人MCPは[Claudeのuser scope](https://code.claude.com/docs/en/mcp#user-scope)へ登録する。実登録先は`~/.claude.json`であり、`settings.json`へ`mcpServers`を追加したり、このrepositoryの`.mcp.json`を全project共通設定として使ったりしない。既存登録・認証・project/local/managed設定を一括上書きしない。
+
+| 登録名 | 接続・前提 |
+| --- | --- |
+| `openaiDeveloperDocs` | [OpenAI Docs](https://developers.openai.com/learn/docs-mcp)の公開read-only HTTP接続。OpenAI APIの実行権限や認証情報は不要 |
+| `withmate-character-context` | WithMateの`withmate-memory mcp-server`。Claude providerのSession bindingが必要 |
+| `withmate-glossary` | WithMateの`withmate-glossary mcp-server`。同じprovider Session bindingと現在のruntime-managed Skillに従う |
+
+Windows版WithMateのcommand shimが`PATH`にあることを確認する。設定例は`cmd.exe /d /c`経由で既存shimを起動し、端末のinstall pathは固定しない。Codexの`node_repl`はCodex専用runtime・pluginに依存するため登録対象ではない。ブラウザー用の代替を追加する場合は、既存Skillと実際に利用できる手段を別途照合する。
+
+次の例はPowerShell 7.3以降で、未登録の各entryを個別に追加する。既存の同名entryがある場合は実登録と設定例を比較し、追加commandで置換しない。
+
+```powershell
+$PSNativeCommandArgumentPassing = 'Standard'
+$mcpExamplePath = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.claude/mcp.example.json'
+$mcpEntries = (Get-Content -LiteralPath $mcpExamplePath -Raw | ConvertFrom-Json).mcpServers
+foreach ($entry in $mcpEntries.PSObject.Properties) {
+    $serverJson = $entry.Value | ConvertTo-Json -Depth 10 -Compress
+    claude mcp add-json --scope user $entry.Name $serverJson
+    if ($LASTEXITCODE -ne 0) { throw "MCP registration failed: $($entry.Name)" }
+}
+```
+
+WithMate用の`env`は、binding reference・turn capability・application instance ID・generation IDを`${VAR}`で起動時に受け取る。実値を設定例・実登録・ログへ固定コピーせず、別provider Sessionの値を転用しない。`WITHMATE_AGENT_RUNTIME_BINDING_REQUIRED`の`1`はSession識別値ではなく、bindingなしのlegacy接続を許さないpolicyである。新しいClaudeセッションをWithMateから起動し、そのセッション自身へ注入された変数を使う。
+
+[変数展開の仕様](https://code.claude.com/docs/en/mcp#environment-variable-expansion-in-mcp-json)では、未定義の`${VAR}`は警告付きで未展開のまま残る。警告やbinding/authorityエラーを接続成功にせず、空値・default・別Sessionの値で補わない。toolの可用性と利用条件は`/mcp`、現在の`tools/list`、[WithMate利用方針](docs/guides/withmate.md)とruntime-managed Skillで確認する。登録の成功、接続の成功、Session-bound toolの実動作確認は分ける。MCPの登録はtoolの包括許可や外部writeの承認を付与しない。
 
 ## modelと担当
 
