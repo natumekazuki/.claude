@@ -1,0 +1,20 @@
+# 認証情報と端末localの実設定
+/.credentials.json
+/settings.json
+/settings.local.json
+
+# 実行時データとインストール状態
+/.last-cleanup
+/.last-update-result.json
+/history.jsonl
+/backups/
+/cache/
+/downloads/
+/plugins/
+/projects/
+/session-env/
+/sessions/
+
+# 外部サービスが管理するSkill
+/skills/synced/
+/skills/withmate-glossary/
