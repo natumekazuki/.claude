@@ -12,6 +12,8 @@ Agent起動は現在のtool schemaに従う。対象・必要な文脈・完了�
 
 read-onlyの依頼は文面だけでなく、利用するagentのtool制限と実効権限を確認する。permissionModeだけを読み取り専用の保証にしない。shell、編集・write、外部writeを行えるMCP等を一律に引き継いだまま、制限済みと報告しない。必要なread-only構成が利用できない場合は、その委譲に依存する完了判断を止め、権限を無断で追加・迂回しない。
 
+本repositoryの汎用read-only担当は[`agents/read-only.md`](../../agents/read-only.md)である。`model: inherit`を使い、toolはRead・Glob・Grepだけに限定する。review観点は依頼ごとに渡し、test専用roleにはしない。runtimeでこの担当と有効なtool構成を確認し、同名のproject・managed定義が優先される場合はその実体を確認する。
+
 待機・再開・結果取得はClaudeの現在のAgent契約に従い、通知と完了見込みを使う。短い間隔のポーリングや、他製品の待機toolの引数を持ち込まない。
 
 ## 統合と成果返却

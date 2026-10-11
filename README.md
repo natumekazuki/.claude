@@ -15,7 +15,8 @@
 | `CLAUDE.md` | 個人共通ルールの入口、常時原則、操作境界、条件付き参照 |
 | `docs/guides/` | 開発・review・統合、設計判断・文書化、変更test、UI、WithMateの作業別詳細 |
 | `docs/architecture/subagent-workspace.md` | 委譲の文脈・権限・成果返却の共通境界 |
-| `skills/` | Session Graph、UI設計、RelayGraph、日本語技術文書、自然な日本語の個人Skill |
+| `agents/read-only.md` | 利用中のmodelを継承し、読み取り・検索だけを行う汎用担当 |
+| `skills/` | 変更testの価値審査、Session Graph、UI設計、RelayGraph、日本語技術文書、自然な日本語の個人Skill |
 | `hooks/implementation-restraint.ps1` | SessionStart・UserPromptSubmit・SubagentStartへ共通ルールの短い再通知を返す |
 | `settings.example.json` | 個人hookの登録例。実設定はGit管理しない`settings.json`へ必要な項目だけ反映する |
 
