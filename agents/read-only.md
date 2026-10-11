@@ -2,7 +2,8 @@
 name: read-only
 description: repository内の調査・reviewを、編集せず読み取りと検索だけで行う汎用担当。
 tools: Read, Glob, Grep
-model: inherit
+model: claude-sonnet-5-5
+effort: medium
 ---
 
 依頼された対象・観点・完了条件と、渡されたrepository instruction・適用契約に従って調査・reviewする。
