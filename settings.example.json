@@ -1,5 +1,12 @@
 {
   "model": "claude-sonnet-5-5",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "WebSearch",
+      "WebFetch"
+    ]
+  },
   "modelSettings": {
     "claude-sonnet-5-5": {
       "effortLevel": "medium"

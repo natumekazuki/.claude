@@ -18,7 +18,7 @@
 | `agents/` | 通常・手順確定・高度判断の3つの汎用担当と、読み取り・検索だけの`read-only`担当 |
 | `skills/` | 変更testの価値審査、Session Graph、UI設計、RelayGraph、日本語技術文書、自然な日本語の個人Skill |
 | `hooks/implementation-restraint.ps1` | SessionStart・UserPromptSubmit・SubagentStartへ共通ルールの短い再通知を返す |
-| `settings.example.json` | model・effort・委譲設定・個人hookの登録例。実設定はGit管理しない`settings.json`へ必要な項目だけ反映する |
+| `settings.example.json` | model・effort・権限・委譲設定・個人hookの登録例。実設定はGit管理しない`settings.json`へ必要な項目だけ反映する |
 
 共通ルールと個人Skillはユーザーhome直下の`~/.claude/`に配置する。`docs/`の詳細を一括importせず、`CLAUDE.md`の読む条件に応じて参照する。Skill内のscript・reference・assetは同じSkillの実pathから解決し、別repositoryのコピーへ依存しない。
 
@@ -26,9 +26,26 @@
 
 変更testの審査は`docs/guides/test-changes.md`の必須条件に従う。runtimeに`review-test-value` Skillやread-only委譲手段が提供されていなければ、審査を免除せず、その審査に依存する作業・完了判断を未完了として報告する。
 
-model・effortと担当の設定例は下記に定める。permission mode、MCP接続、auto memoryは利用中の端末local設定に従う。再通知hookはcontextを返すだけで、権限を付与したり操作を代理実行したりしない。
+model・effortと担当、権限の設定例は下記に定める。MCP接続とauto memoryは利用中の端末local設定に従う。再通知hookはcontextを返すだけで、権限を付与したり操作を代理実行したりしない。
 
 配置・更新後は新しいClaude Codeセッションで個人`CLAUDE.md`の読込、`/skills`の実path・重複・明示起動policy、`/hooks`のtrust・登録・出力を確認する。静的な配置確認と実際のルール適用・Skill起動を区別し、未実施のruntime確認を成功扱いしない。
+
+## 権限と実行環境
+
+設定例の`permissions`を端末localの`settings.json`へ反映し、`acceptEdits`を既定にする。Codexのworkspace-writeと必要時のユーザー承認に近づける設定であり、同等の隔離ではない。
+
+| 対象 | 設定・扱い |
+| --- | --- |
+| 作業範囲の編集 | working directoryと明示的な追加directoryのfile編集、Claudeが認識する一般filesystem操作を自動許可する |
+| shell command | Bash・PowerShellの包括allowは置かない。組込みread-only等を除き、一般commandの承認確認を残すため、Codexのsandbox内実行より確認が増える |
+| Webの読み取り | `WebSearch`と`WebFetch`をallowする。shellの通信、MCP、外部writeの承認を一括許可するものではない |
+| 追加directory | taskに必要な範囲を`--add-dir <path>`または`/add-dir`で追加する。home全体、別repository、SessionFolderの実pathを共通設定へ固定しない |
+
+依頼範囲、read-only、外部write・破壊的操作・push・default/protected branchへのcommit等の個別承認は`CLAUDE.md`の操作境界に従う。toolの自動許可は操作自体の承認を代替しない。`.git`・`.claude`等の保護pathにはClaude固有の追加確認があり、`acceptEdits`はそれを一括解除しない。既定を`auto`や`bypassPermissions`にはしない。
+
+[Claude公式のsandbox仕様](https://code.claude.com/docs/en/sandboxing)ではNative Windowsのshell commandはOS sandboxなしで実行される。承認したcommandとその子processを、CodexのWindows elevated sandboxのように作業範囲へ隔離できない。Read/Editのpath規則やcommand文字列の許可規則も、任意のscriptや子processのfilesystem・networkアクセスを隔離する代替にはならない。非対応環境で隔離済みと見せるsandbox設定は置かない。同等のOS隔離が必要な運用では、WSL2・container等の対応環境とそのsandbox設定を別途選定する。
+
+設定例は個人の開始値であり、managed policyを置換しない。project/local設定、CLI・host指定等が実効値へ影響する。[設定の優先順位](https://code.claude.com/docs/en/settings#settings-precedence)に従い、新しいsessionで`/status`と`/permissions`から読込元・mode・規則を確認する。起動成功と、承認dialogや隔離の実動作確認は分ける。
 
 ## modelと担当
 
