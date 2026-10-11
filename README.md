@@ -18,7 +18,7 @@
 | `agents/` | 通常・手順確定・高度判断の3つの汎用担当と、読み取り・検索だけの`read-only`担当 |
 | `skills/` | 変更testの価値審査、Session Graph、UI設計、RelayGraph、日本語技術文書、自然な日本語の個人Skill |
 | `hooks/implementation-restraint.ps1` | SessionStart・UserPromptSubmit・SubagentStartへ共通ルールの短い再通知を返す |
-| `settings.example.json` | model・effort・権限・委譲設定・個人hookの登録例。実設定はGit管理しない`settings.json`へ必要な項目だけ反映する |
+| `settings.example.json` | model・effort・権限・委譲設定・個人hook・auto memory無効化の設定例。実設定はGit管理しない`settings.json`へ必要な項目だけ反映する |
 | `mcp.example.json` | 個人MCPの登録例。実登録はuser scopeの`~/.claude.json`に置き、認証・Session固有値は保存しない |
 
 共通ルールと個人Skillはユーザーhome直下の`~/.claude/`に配置する。`docs/`の詳細を一括importせず、`CLAUDE.md`の読む条件に応じて参照する。Skill内のscript・reference・assetは同じSkillの実pathから解決し、別repositoryのコピーへ依存しない。
@@ -27,7 +27,7 @@
 
 変更testの審査は`docs/guides/test-changes.md`の必須条件に従う。runtimeに`review-test-value` Skillやread-only委譲手段が提供されていなければ、審査を免除せず、その審査に依存する作業・完了判断を未完了として報告する。
 
-model・effortと担当、権限、MCPの設定例は下記に定める。auto memoryは利用中の端末local設定に従う。再通知hookはcontextを返すだけで、権限を付与したり操作を代理実行したりしない。
+model・effortと担当、権限、MCP、auto memory無効化の設定例は下記に定める。再通知hookはcontextを返すだけで、権限を付与したり操作を代理実行したりしない。
 
 配置・更新後は新しいClaude Codeセッションで個人`CLAUDE.md`の読込、`/skills`の実path・重複・明示起動policy、`/hooks`のtrust・登録・出力を確認する。静的な配置確認と実際のルール適用・Skill起動を区別し、未実施のruntime確認を成功扱いしない。
 
@@ -47,6 +47,14 @@ model・effortと担当、権限、MCPの設定例は下記に定める。auto m
 [Claude公式のsandbox仕様](https://code.claude.com/docs/en/sandboxing)ではNative Windowsのshell commandはOS sandboxなしで実行される。承認したcommandとその子processを、CodexのWindows elevated sandboxのように作業範囲へ隔離できない。Read/Editのpath規則やcommand文字列の許可規則も、任意のscriptや子processのfilesystem・networkアクセスを隔離する代替にはならない。非対応環境で隔離済みと見せるsandbox設定は置かない。同等のOS隔離が必要な運用では、WSL2・container等の対応環境とそのsandbox設定を別途選定する。
 
 設定例は個人の開始値であり、managed policyを置換しない。project/local設定、CLI・host指定等が実効値へ影響する。[設定の優先順位](https://code.claude.com/docs/en/settings#settings-precedence)に従い、新しいsessionで`/status`と`/permissions`から読込元・mode・規則を確認する。起動成功と、承認dialogや隔離の実動作確認は分ける。
+
+## 会話をまたぐ記憶
+
+Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起は[WithMate利用方針](docs/guides/withmate.md)に従ってWithMate Memoryを使用する。WithMateを利用できない場合も、Claude auto memoryや別の記憶storeを代替として作らない。
+
+[Claude公式の無効化設定](https://code.claude.com/docs/en/memory#enable-or-disable-auto-memory)を使用し、[サブエージェントのpersistent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory)も無効にする。既存の記憶fileを削除・移行する設定ではなく、`CLAUDE.md`等の明示的な指示の読込は維持する。設定例・実設定に記憶directoryの置換や削除処理を追加しない。
+
+設定の読込元・優先順位を確認し、新しいClaudeセッションの`/memory`でauto memoryがoffであることを確認する。WithMate Memoryの接続・保存・想起の動作確認は、この無効化とは分ける。
 
 ## MCP接続
 
