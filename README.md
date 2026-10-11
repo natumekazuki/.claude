@@ -31,6 +31,47 @@ model・effortと担当、権限、MCP、auto memory無効化の設定例は下�
 
 配置・更新後は新しいClaude Codeセッションで個人`CLAUDE.md`の読込、`/skills`の実path・重複・明示起動policy、`/hooks`のtrust・登録・出力を確認する。静的な配置確認と実際のルール適用・Skill起動を区別し、未実施のruntime確認を成功扱いしない。
 
+## 導入と更新
+
+正式版のtagに対応するsource archiveまたはcheckoutを、端末localの実設定とは別のdirectoryで取得する。`CLAUDE.md`・`docs/`・`agents/`・自分で保守する`skills/`・`hooks/`・設定例をユーザーhome直下の`~/.claude/`へ配置する。既存の同名資産がある場合は差分を確認して反映し、directory全体を削除・置換しない。第三者のLICENSE・NOTICEとSkill内のreference・script・assetも保持する。
+
+`settings.example.json`は必要な項目だけを既存の`settings.json`へ統合する。theme・更新channel・既存hook・project/local/managed設定を設定例全体で上書きしない。MCPは「MCP接続」に従ってuser scopeへ個別登録し、既存登録・認証・Session binding実値は移動・複製しない。`skills/synced/`とWithMate管理Skill、既存Memory・履歴はこの配布物に含めず、更新時も保持する。
+
+確認環境はNative WindowsのClaude Code 2.1.296であり、未確認の最低CLI versionや他OSでの動作は保証しない。利用する機能に応じて次の依存を用意する。
+
+| 機能 | 依存 |
+| --- | --- |
+| Session Graphの保存helper | Python 3.10以降 |
+| review-test-valueの抽出器 | Python 3.11以降（`tomllib`を使用）、Git |
+| TypeScriptのtest抽出 | Node.js、npm、Skill内のlockfileに従う依存 |
+| C#のtest抽出 | .NET 8の実行環境と対応SDK。Skill内のprojectをlocked restoreでbuildする |
+| 個人hook | Windows PowerShell 5.1またはPowerShell 7 |
+| MCP登録例 | PowerShell 7.3以降、Claude CLI。WithMate用entryは既存command shimと当該Claude Sessionのbindingが必要 |
+
+TypeScriptの依存は配置先で次のように導入する。依存不足やadapterの失敗を抽出・審査の成功と扱わない。
+
+```powershell
+$typeScriptAdapterPath = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.claude/skills/review-test-value/scripts/adapters/typescript'
+npm ci --prefix $typeScriptAdapterPath
+if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation failed' }
+```
+
+更新後は変更した経路の確認を行い、既存の実設定・認証・Memory・共有記録を保護する。配布版の取得だけでは端末local設定や外部管理Skillが更新されたことにはならない。
+
+## 課題管理とリリース
+
+本repositoryの不具合・機能要求・後追い課題は[natumekazuki/.claudeのGitHub Issues](https://github.com/natumekazuki/.claude/issues)を正本とする。対応versionの未指定はバックログとし、予定だけを理由に修正・統合・公開済みとは扱わない。Milestoneは使用しない。共通資産の修正は「Codex／Claude間の変更反映」に従い、必要な対応範囲を課題へ明記する。
+
+通常の統合先・既定branchは`master`、正式版は`vMAJOR.MINOR.PATCH` tagとGitHub Releaseで識別する。版別の内容・確認・維持対象・既知制約は`docs/releases/vMAJOR.MINOR.PATCH.md`に記載する。repositoryはprivateで管理し、公開範囲の変更は別に承認を受ける。
+
+維持対象は、利用者が直接使うSkill名と導入・配置の入口、release noteで指定するreview-test-valueのCLI/result・metadata・source adapter・Git差分選択、およびSession GraphのCLIと既存共有記録の保存・競合・cleanup契約とする。実設定・認証・既存Memory・既存共有記録等の利用者データはtagの有無にかかわらず保護する。外部サービスのmodel提供・費用・出力品質やWithMateの製品動作まで本repositoryの互換性保証へ含めない。
+
+内部実装、指示の表現、開始値としてのmodel/effort、fixture、文書構成全体は、それ自体を固定しない。公表した維持契約を損なわない改善は可能とする。認証・認可・個別操作の承認境界を弱める変更は、version番号だけで許可しない。
+
+維持契約を壊す変更はmajor、互換性を保つ機能追加はminor、互換性を保つ修正・説明訂正はpatchとする。tagのない開発途中の実装全体との互換性は保証しないが、実利用済みのデータ・操作境界を保護対象から外す根拠にしない。公開済みtagを付け替えず、変更は新しい版で公開する。
+
+実装・review・統合・正式公開は別に判断する。統合には必須確認、ブロッカー解消、後追い登録が必要であり、非ブロッカー全件修正は条件にしない。正式公開には対象commitへの統合、release note、tagとReleaseの成立・対象確認が必要である。Issue書込み、既定branch変更、masterへの統合、push、Release作成・公開は操作・対象・scopeへの承認に従う。
+
 ## 権限と実行環境
 
 設定例の`permissions`を端末localの`settings.json`へ反映し、`acceptEdits`を既定にする。Codexのworkspace-writeと必要時のユーザー承認に近づける設定であり、同等の隔離ではない。
