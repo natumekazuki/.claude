@@ -1,0 +1,12 @@
+natural-japanese
+
+Source: https://github.com/coji/natural-japanese
+Upstream path: skills/natural-japanese
+Revision: 0f1cc1c5a4e2aa7590598c88a15c213a60d9545a
+License: MIT (see LICENSE)
+
+This directory is maintained independently in the Claude configuration repository.
+Local adaptations route technical-document structure and Markdown formatting to
+japanese-tech-writing-review and provide a concise write/score router with local
+write and score workflow adjustments. Explicit-only invocation is configured with
+disable-model-invocation in SKILL.md.

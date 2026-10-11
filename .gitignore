@@ -15,6 +15,10 @@
 /session-env/
 /sessions/
 
+# 個人SkillのPython実行生成物
+__pycache__/
+*.py[cod]
+
 # 外部サービスが管理するSkill
 /skills/synced/
 /skills/withmate-glossary/

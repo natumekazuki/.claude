@@ -1,0 +1,38 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "& (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.claude/hooks/implementation-restraint.ps1')"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "& (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.claude/hooks/implementation-restraint.ps1')"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "& (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.claude/hooks/implementation-restraint.ps1')"
+          }
+        ]
+      }
+    ]
+  }
+}
