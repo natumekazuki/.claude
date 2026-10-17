@@ -18,7 +18,7 @@ read-only依頼にも同じ判断基準を使い、tool制限を持つ`read-only
 
 ## runtimeと権限
 
-ユーザーの明示指定は尊重し、指定がなければ上記の担当分けと開始値を使う。他製品のモデル名、role名、tool引数を流用しない。指定modelがruntimeで利用できない場合は許可された構成の親で可能な範囲を続け、必須の委譲を実施できない時はその条件を報告する。親の自己評価で審査済みにしない。
+ユーザーの明示指定は尊重し、指定がなければ上記の担当分けと開始値を使う。他製品のモデル名、role名、tool引数を流用しない。指定modelがruntimeで利用できない場合は許可された構成の親で可能な範囲を続ける。親の自己評価で審査済みにしない。
 
 role名だけで実modelを推測せず、起動するsessionのmodel IDとeffortを確認する。Claudeではper-callのmodelがfrontmatterより優先され、`CLAUDE_CODE_EFFORT_LEVEL`は担当別effortより優先される。`CLAUDE_CODE_SUBAGENT_MODEL_FORCE`で全担当を同じmodelへ固定したり、一律のeffort環境変数で担当の開始値を潰したりしない。project・managedの同名定義やhost設定が優先される場合は、その実体と実効値を確認する。
 
@@ -34,7 +34,7 @@ read-onlyの依頼は文面だけでなく、利用するagentのtool制限と�
 
 ## 統合と成果返却
 
-test価値reviewの抽出、read-onlyサブエージェントへの委譲、review観点、完了判断は、runtimeが提供するreview-test-value Skillを正本とする。専用roleや独自のworker、scheduler、artifact storeは使わない。必須Skillやread-only担当が利用できない場合は審査を免除せず、実施できない条件を報告する。
+test価値reviewの抽出、read-onlyサブエージェントへの委譲、review観点、完了判断は、runtimeが提供するreview-test-value Skillを正本とする。専用roleや独自のworker、scheduler、artifact storeは使わない。必須Skillやread-only担当が利用できない場合も審査を免除しない。
 
 同じworking treeで作業する場合は編集範囲と生成物の競合を避け、ユーザーと他の担当の変更を保護する。子は結果、根拠、実行した確認、未解決事項を親へ返し、親が統合と最終確認を行う。通常の成果返却に専用文書は不要である。
 
