@@ -3,30 +3,6 @@
     "openaiDeveloperDocs": {
       "type": "http",
       "url": "https://developers.openai.com/mcp"
-    },
-    "withmate-character-context": {
-      "type": "stdio",
-      "command": "cmd.exe",
-      "args": ["/d", "/c", "withmate-memory", "mcp-server"],
-      "env": {
-        "WITHMATE_AGENT_RUNTIME_BINDING_REQUIRED": "1",
-        "WITHMATE_AGENT_RUNTIME_BINDING_REFERENCE": "${WITHMATE_AGENT_RUNTIME_BINDING_REFERENCE}",
-        "WITHMATE_AGENT_RUNTIME_TURN_CAPABILITY": "${WITHMATE_AGENT_RUNTIME_TURN_CAPABILITY}",
-        "WITHMATE_MEMORY_RUNTIME_APPLICATION_INSTANCE_ID": "${WITHMATE_MEMORY_RUNTIME_APPLICATION_INSTANCE_ID}",
-        "WITHMATE_MEMORY_RUNTIME_GENERATION_ID": "${WITHMATE_MEMORY_RUNTIME_GENERATION_ID}"
-      }
-    },
-    "withmate-glossary": {
-      "type": "stdio",
-      "command": "cmd.exe",
-      "args": ["/d", "/c", "withmate-glossary", "mcp-server"],
-      "env": {
-        "WITHMATE_AGENT_RUNTIME_BINDING_REQUIRED": "1",
-        "WITHMATE_AGENT_RUNTIME_BINDING_REFERENCE": "${WITHMATE_AGENT_RUNTIME_BINDING_REFERENCE}",
-        "WITHMATE_AGENT_RUNTIME_TURN_CAPABILITY": "${WITHMATE_AGENT_RUNTIME_TURN_CAPABILITY}",
-        "WITHMATE_MEMORY_RUNTIME_APPLICATION_INSTANCE_ID": "${WITHMATE_MEMORY_RUNTIME_APPLICATION_INSTANCE_ID}",
-        "WITHMATE_MEMORY_RUNTIME_GENERATION_ID": "${WITHMATE_MEMORY_RUNTIME_GENERATION_ID}"
-      }
     }
   }
 }
