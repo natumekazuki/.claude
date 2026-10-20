@@ -91,7 +91,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 ## 会話をまたぐ記憶
 
-Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起は[WithMate利用方針](docs/guides/withmate.md)に従ってWithMate Memoryを使用する。WithMateを利用できない場合も、Claude auto memoryや別の記憶storeを代替として作らない。
+Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起はWithMate Memoryを使用する。日常の記録と能動的な参照の利用姿勢、継続的な許可・保存範囲は[WithMate利用方針](docs/guides/withmate.md)、具体的な利用契機・探索例・呼出契約は現在提供されているMCP instructions・tool説明・schemaに従う。WithMateを利用できない場合も、Claude auto memoryや別の記憶storeを代替として作らない。
 
 [Claude公式の無効化設定](https://code.claude.com/docs/en/memory#enable-or-disable-auto-memory)を使用し、[サブエージェントのpersistent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory)も無効にする。既存の記憶fileを削除・移行する設定ではなく、`CLAUDE.md`等の明示的な指示の読込は維持する。設定例・実設定に記憶directoryの置換や削除処理を追加しない。
 
