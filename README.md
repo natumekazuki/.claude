@@ -25,7 +25,7 @@
 
 `japanese-tech-writing-review`と`natural-japanese`は`disable-model-invocation: true`で明示起動だけにする。ユーザーが`/japanese-tech-writing-review`または`/natural-japanese`を呼び出す場合に使い、通常のREADME更新・開発報告へ自動で校正を追加しない。
 
-変更testの審査は`docs/guides/test-changes.md`の必須条件に従う。runtimeに`review-test-value` Skillやread-only委譲手段が提供されていなければ、審査を免除せず、その審査に依存する作業・完了判断を未完了として報告する。
+変更testの審査は`docs/guides/test-changes.md`の必須条件に従う。runtimeに`review-test-value` Skillやread-only委譲手段が提供されていない場合も、審査を免除しない。
 
 model・effortと担当、権限、MCP、auto memory無効化の設定例は下記に定める。再通知hookはcontextを返すだけで、権限を付与したり操作を代理実行したりしない。
 
@@ -168,4 +168,4 @@ roleの`model`と`effort`は[Claudeのfrontmatter](https://code.claude.com/docs/
 - 自分で保守するルール・Skill・設定例・hook方針のうち、両製品に共通する変更は、原則として同じ変更作業で双方へ反映する。
 - 反映では目的・制約・完了条件を揃える。モデル、tool、設定形式等の製品固有部分は、それぞれに適した定義を維持する。
 - 製品固有の変更でも、もう一方への影響を確認する。反映不要なら、その理由を作業報告に示す。
-- 双方の差分と必要な動作を確認し、反映・検証結果を報告する。権限不足や仕様差によって反映できない部分は、理由と未完了範囲を明示する。
+- 双方の差分と必要な動作を確認し、反映・検証結果を報告する。
