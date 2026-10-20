@@ -17,7 +17,7 @@
 | `docs/architecture/subagent-workspace.md` | 担当の選択、委譲の文脈・権限・成果返却の境界 |
 | `agents/` | 通常・手順確定・高度判断の3つの汎用担当と、読み取り・検索だけの`read-only`担当 |
 | `skills/` | 変更testの価値審査、Session Graph、UI設計、RelayGraph、日本語技術文書、自然な日本語の個人Skill |
-| `hooks/implementation-restraint.ps1` | SessionStart・UserPromptSubmit・SubagentStartへ共通ルールの短い再通知を返す |
+| `hooks/implementation-restraint.ps1` | SessionStartのstartup・resume・compactとSubagentStartへ共通ルールの短い再通知を返す |
 | `settings.example.json` | model・effort・権限・委譲設定・個人hook・auto memory無効化の設定例。実設定はGit管理しない`settings.json`へ必要な項目だけ反映する |
 | `mcp.example.json` | 個人MCPの登録例。実登録はuser scopeの`~/.claude.json`に置き、認証・Session固有値は保存しない |
 
@@ -35,7 +35,7 @@ model・effortと担当、権限、MCP、auto memory無効化の設定例は下�
 
 正式版のtagに対応するsource archiveまたはcheckoutを、端末localの実設定とは別のdirectoryで取得する。`CLAUDE.md`・`docs/`・`agents/`・自分で保守する`skills/`・`hooks/`・設定例をユーザーhome直下の`~/.claude/`へ配置する。既存の同名資産がある場合は差分を確認して反映し、directory全体を削除・置換しない。第三者のLICENSE・NOTICEとSkill内のreference・script・assetも保持する。
 
-`settings.example.json`は必要な項目だけを既存の`settings.json`へ統合する。theme・更新channel・既存hook・project/local/managed設定を設定例全体で上書きしない。MCPは「MCP接続」に従ってuser scopeへ個別登録し、既存登録・認証・Session binding実値は移動・複製しない。`skills/synced/`とWithMate管理Skill、既存Memory・履歴はこの配布物に含めず、更新時も保持する。
+`settings.example.json`は必要な項目だけを既存の`settings.json`へ統合する。theme・更新channel・既存hook・project/local/managed設定を設定例全体で上書きしない。個人MCPは「MCP接続」に従ってuser scopeへ個別登録する。WithMateのMemory／Glossary MCPはSessionへ自動供給されるため手動登録しない。既存登録・認証・Session binding実値は移動・複製しない。`skills/synced/`とWithMate管理Skill、既存Memory・履歴はこの配布物に含めず、更新時も保持する。
 
 確認環境はNative WindowsのClaude Code 2.1.296であり、未確認の最低CLI versionや他OSでの動作は保証しない。利用する機能に応じて次の依存を用意する。
 
@@ -46,7 +46,8 @@ model・effortと担当、権限、MCP、auto memory無効化の設定例は下�
 | TypeScriptのtest抽出 | Node.js、npm、Skill内のlockfileに従う依存 |
 | C#のtest抽出 | .NET 8の実行環境と対応SDK。Skill内のprojectをlocked restoreでbuildする |
 | 個人hook | Windows PowerShell 5.1またはPowerShell 7 |
-| MCP登録例 | PowerShell 7.3以降、Claude CLI。WithMate用entryは既存command shimと当該Claude Sessionのbindingが必要 |
+| 個人MCP登録例 | PowerShell 7.3以降、Claude CLI |
+| WithMateのmanaged MCP | WithMate 6.3.29から起動するClaude provider Session |
 
 TypeScriptの依存は配置先で次のように導入する。依存不足やadapterの失敗を抽出・審査の成功と扱わない。
 
@@ -91,7 +92,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 ## 会話をまたぐ記憶
 
-Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起は[WithMate利用方針](docs/guides/withmate.md)に従ってWithMate Memoryを使用する。WithMateを利用できない場合も、Claude auto memoryや別の記憶storeを代替として作らない。
+Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起はWithMate Memoryを使用する。日常の記録と能動的な参照の利用姿勢、継続的な許可・保存範囲は[WithMate利用方針](docs/guides/withmate.md)、具体的な利用契機・探索例・呼出契約は現在提供されているMCP instructions・tool説明・schemaに従う。WithMateを利用できない場合も、Claude auto memoryや別の記憶storeを代替として作らない。
 
 [Claude公式の無効化設定](https://code.claude.com/docs/en/memory#enable-or-disable-auto-memory)を使用し、[サブエージェントのpersistent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory)も無効にする。既存の記憶fileを削除・移行する設定ではなく、`CLAUDE.md`等の明示的な指示の読込は維持する。設定例・実設定に記憶directoryの置換や削除処理を追加しない。
 
@@ -104,10 +105,8 @@ Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で�
 | 登録名 | 接続・前提 |
 | --- | --- |
 | `openaiDeveloperDocs` | [OpenAI Docs](https://developers.openai.com/learn/docs-mcp)の公開read-only HTTP接続。OpenAI APIの実行権限や認証情報は不要 |
-| `withmate-character-context` | WithMateの`withmate-memory mcp-server`。Claude providerのSession bindingが必要 |
-| `withmate-glossary` | WithMateの`withmate-glossary mcp-server`。同じprovider Session bindingと現在のruntime-managed Skillに従う |
 
-Windows版WithMateのcommand shimが`PATH`にあることを確認する。設定例は`cmd.exe /d /c`経由で既存shimを起動し、端末のinstall pathは固定しない。Codexの`node_repl`はCodex専用runtime・pluginに依存するため登録対象ではない。ブラウザー用の代替を追加する場合は、既存Skillと実際に利用できる手段を別途照合する。
+Codexの`node_repl`はCodex専用runtime・pluginに依存するため登録対象ではない。ブラウザー用の代替を追加する場合は、既存Skillと実際に利用できる手段を別途照合する。
 
 次の例はPowerShell 7.3以降で、未登録の各entryを個別に追加する。既存の同名entryがある場合は実登録と設定例を比較し、追加commandで置換しない。
 
@@ -122,9 +121,19 @@ foreach ($entry in $mcpEntries.PSObject.Properties) {
 }
 ```
 
-WithMate用の`env`は、binding reference・turn capability・application instance ID・generation IDを`${VAR}`で起動時に受け取る。実値を設定例・実登録・ログへ固定コピーせず、別provider Sessionの値を転用しない。`WITHMATE_AGENT_RUNTIME_BINDING_REQUIRED`の`1`はSession識別値ではなく、bindingなしのlegacy接続を許さないpolicyである。新しいClaudeセッションをWithMateから起動し、そのセッション自身へ注入された変数を使う。
+### WithMateのmanaged HTTP接続
 
-[変数展開の仕様](https://code.claude.com/docs/en/mcp#environment-variable-expansion-in-mcp-json)では、未定義の`${VAR}`は警告付きで未展開のまま残る。警告やbinding/authorityエラーを接続成功にせず、空値・default・別Sessionの値で補わない。toolの可用性と利用条件は`/mcp`、現在の`tools/list`、[WithMate利用方針](docs/guides/withmate.md)とruntime-managed Skillで確認する。登録の成功、接続の成功、Session-bound toolの実動作確認は分ける。MCPの登録はtoolの包括許可や外部writeの承認を付与しない。
+WithMate 6.3.29はClaude provider Sessionへ、共有localhost HTTP MCPの`withmate-memory`と`withmate-glossary`を自動供給する。endpointはそれぞれ`/mcp/memory`と`/mcp/glossary`である。接続URLと当turnの短命tokenは一時設定で渡されるため、user scopeやproject設定へ登録せず、設定例・実登録・ログへ保存しない。
+
+WithMateから新しいClaude Sessionを開始し、そのSessionへ公開された`tools/list`と必要なread-only操作で接続を確認する。通常のCLIによる永続登録の一覧だけで、一時設定の接続成否を判定しない。接続確認だけを目的にMemory・Affect・Glossaryを書き込まない。手動登録もある場合は同じ機能の重複と利用経路を確認し、第三者MCPを一括変更しない。
+
+未接続やbindingエラーでは起動元WithMateとSessionの対応を確認し、URL・tokenを推測したり別Sessionの値を転用したりしない。利用条件と再試行・CLI fallbackの可否は、現在のMCP instructions・tool説明・schema、[WithMate利用方針](docs/guides/withmate.md)とruntime-managed Skillに従う。登録・接続・Session-bound toolの実動作確認は分ける。接続設定はtoolの包括許可や外部writeの承認を付与しない。
+
+### 手動STDIOによる開発・診断
+
+手動clientの開発・診断では、WithMateが配置する`withmate-memory mcp-server`または`withmate-glossary mcp-server`をSTDIO server commandとして使用できる。Windowsのcommand shimは`PATH`から`cmd.exe /d /c`経由で起動し、端末のinstall pathは固定しない。この経路を通常の自動接続と重複登録したり、HTTP未接続時の自動的な迂回路にしたりしない。
+
+当該provider Sessionの`WITHMATE_AGENT_RUNTIME_BINDING_REFERENCE`、`WITHMATE_AGENT_RUNTIME_BINDING_REQUIRED`、`WITHMATE_AGENT_RUNTIME_TURN_CAPABILITY`、`WITHMATE_MEMORY_RUNTIME_APPLICATION_INSTANCE_ID`、`WITHMATE_MEMORY_RUNTIME_GENERATION_ID`を診断用processへ渡す。bindingの実値は永続化・複製せず、欠落値を推測で補わない。手動STDIO設定は通常導入用の`mcp.example.json`へ追加しない。
 
 ## modelと担当
 
