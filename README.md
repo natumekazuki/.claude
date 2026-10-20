@@ -17,7 +17,7 @@
 | `docs/architecture/subagent-workspace.md` | 担当の選択、委譲の文脈・権限・成果返却の境界 |
 | `agents/` | 通常・手順確定・高度判断の3つの汎用担当と、読み取り・検索だけの`read-only`担当 |
 | `skills/` | 変更testの価値審査、Session Graph、UI設計、RelayGraph、日本語技術文書、自然な日本語の個人Skill |
-| `hooks/implementation-restraint.ps1` | SessionStart・UserPromptSubmit・SubagentStartへ共通ルールの短い再通知を返す |
+| `hooks/implementation-restraint.ps1` | SessionStartのstartup・resume・compactとSubagentStartへ共通ルールの短い再通知を返す |
 | `settings.example.json` | model・effort・権限・委譲設定・個人hook・auto memory無効化の設定例。実設定はGit管理しない`settings.json`へ必要な項目だけ反映する |
 | `mcp.example.json` | 個人MCPの登録例。実登録はuser scopeの`~/.claude.json`に置き、認証・Session固有値は保存しない |
 
