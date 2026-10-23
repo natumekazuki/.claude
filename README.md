@@ -27,6 +27,8 @@
 
 変更testの審査は`docs/guides/test-changes.md`の必須条件に従う。runtimeに`review-test-value` Skillやread-only委譲手段が提供されていない場合も、審査を免除しない。
 
+review指摘の採否・対応時期・統合可否は`docs/guides/development.md`の「統合優先・修正分離」に従って分ける。作成中のtest metadataとtest本文の不一致等は、今回必要で依頼範囲内の修正と必要確認で完結するなら仕上げとして対応する。後追いの基準を満たす残件だけを引き継ぎ、根拠のない追加test案や好みは不採用で終了できる。後追い非該当から即時修正を必須化せず、局所修正後に全体の改善探索を繰り返さない。
+
 model・effortと担当、権限、MCP、auto memory無効化の設定例は下記に定める。再通知hookはcontextを返すだけで、権限を付与したり操作を代理実行したりしない。
 
 配置・更新後は新しいClaude Codeセッションで個人`CLAUDE.md`の読込、`/skills`の実path・重複・明示起動policy、`/hooks`のtrust・登録・出力を確認する。静的な配置確認と実際のルール適用・Skill起動を区別し、未実施のruntime確認を成功扱いしない。
@@ -71,7 +73,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 維持契約を壊す変更はmajor、互換性を保つ機能追加はminor、互換性を保つ修正・説明訂正はpatchとする。tagのない開発途中の実装全体との互換性は保証しないが、実利用済みのデータ・操作境界を保護対象から外す根拠にしない。公開済みtagを付け替えず、変更は新しい版で公開する。
 
-実装・review・統合・正式公開は別に判断する。統合には必須確認、ブロッカー解消、後追い登録が必要であり、非ブロッカー全件修正は条件にしない。正式公開には対象commitへの統合、release note、tagとReleaseの成立・対象確認が必要である。Issue書込み、既定branch変更、masterへの統合、push、Release作成・公開は操作・対象・scopeへの承認に従う。
+実装・review・統合・正式公開は別に判断する。統合には必須確認、ブロッカー解消、後追いの基準を満たす残件の登録が必要であり、非ブロッカー全件修正や全件登録は条件にしない。既定の管理先と操作権限の範囲内では記録まで行い、登録要否を定型質問に戻さず結果と参照先を報告する。正式公開には対象commitへの統合、release note、tagとReleaseの成立・対象確認が必要である。Issue書込み、既定branch変更、masterへの統合、push、Release作成・公開は操作・対象・scopeへの承認に従い、承認済みの範囲は再確認しない。
 
 ## 権限と実行環境
 
