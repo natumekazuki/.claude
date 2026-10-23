@@ -27,6 +27,8 @@
 
 変更testの審査は`docs/guides/test-changes.md`の必須条件に従う。runtimeに`review-test-value` Skillやread-only委譲手段が提供されていない場合も、審査を免除しない。
 
+review指摘の採否・対応時期・統合可否は`docs/guides/development.md`の「統合優先・修正分離」に従って分ける。作成中のtest metadataとtest本文の不一致等は、今回必要で依頼範囲内の修正と必要確認で完結するなら仕上げとして対応する。後追いの基準を満たす残件だけを引き継ぎ、根拠のない追加test案や好みは不採用で終了できる。後追い非該当から即時修正を必須化せず、局所修正後に全体の改善探索を繰り返さない。
+
 model・effortと担当、権限、MCP、auto memory無効化の設定例は下記に定める。再通知hookはcontextを返すだけで、権限を付与したり操作を代理実行したりしない。
 
 配置・更新後は新しいClaude Codeセッションで個人`CLAUDE.md`の読込、`/skills`の実path・重複・明示起動policy、`/hooks`のtrust・登録・出力を確認する。静的な配置確認と実際のルール適用・Skill起動を区別し、未実施のruntime確認を成功扱いしない。
@@ -71,7 +73,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 維持契約を壊す変更はmajor、互換性を保つ機能追加はminor、互換性を保つ修正・説明訂正はpatchとする。tagのない開発途中の実装全体との互換性は保証しないが、実利用済みのデータ・操作境界を保護対象から外す根拠にしない。公開済みtagを付け替えず、変更は新しい版で公開する。
 
-実装・review・統合・正式公開は別に判断する。統合には必須確認、ブロッカー解消、後追い登録が必要であり、非ブロッカー全件修正は条件にしない。正式公開には対象commitへの統合、release note、tagとReleaseの成立・対象確認が必要である。Issue書込み、既定branch変更、masterへの統合、push、Release作成・公開は操作・対象・scopeへの承認に従う。
+実装・review・統合・正式公開は別に判断する。統合には必須確認、ブロッカー解消、後追いの基準を満たす残件の登録が必要であり、非ブロッカー全件修正や全件登録は条件にしない。既定の管理先と操作権限の範囲内では記録まで行い、登録要否を定型質問に戻さず結果と参照先を報告する。正式公開には対象commitへの統合、release note、tagとReleaseの成立・対象確認が必要である。Issue書込み、既定branch変更、masterへの統合、push、Release作成・公開は操作・対象・scopeへの承認に従い、承認済みの範囲は再確認しない。
 
 ## 権限と実行環境
 
@@ -92,11 +94,28 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 ## 会話をまたぐ記憶
 
-Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起はWithMate Memoryを使用する。日常の記録と能動的な参照の利用姿勢、継続的な許可・保存範囲は[WithMate利用方針](docs/guides/withmate.md)、具体的な利用契機・探索例・呼出契約は現在提供されているMCP instructions・tool説明・schemaに従う。WithMateを利用できない場合も、Claude auto memoryや別の記憶storeを代替として作らない。
+Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起はWithMate Memoryを使用する。本人による必要時の想起・経験の記録、Character Affectの反映、継続的な許可・保存範囲は[WithMate利用方針](docs/guides/withmate.md)、利用可能な操作・探索例・呼出契約は現在提供されているMCP instructions・tool説明・schemaに従う。WithMateを利用できない場合も、Claude auto memoryや別の記憶storeを代替として作らない。
 
 [Claude公式の無効化設定](https://code.claude.com/docs/en/memory#enable-or-disable-auto-memory)を使用し、[サブエージェントのpersistent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory)も無効にする。既存の記憶fileを削除・移行する設定ではなく、`CLAUDE.md`等の明示的な指示の読込は維持する。設定例・実設定に記憶directoryの置換や削除処理を追加しない。
 
 設定の読込元・優先順位を確認し、新しいClaudeセッションの`/memory`でauto memoryがoffであることを確認する。WithMate Memoryの接続・保存・想起の動作確認は、この無効化とは分ける。
+
+### Memory・Affect方針の検証
+
+想起・記録判断と会話への反映は[WithMate利用方針](docs/guides/withmate.md)、利用可能な操作・引数・scope等は現在のMCP提供契約を正本とする。方針変更時はCLAUDE.mdの読込条件、guide、提供文・呼出契約を照合し、WithMate側の変更が必要なら不足と変更案を分けて示す。配布元の編集をlive配置や提供元の変更と同一視しない。
+
+行動の確認は、許可された実際の会話・作業で本人が行う。別エージェントに内面の代筆をさせず、保存件数を満たすための経験・情動を作らない。次の観点を変更範囲に応じて確認し、毎turnのチェックリストや恒久test基盤にはしない。
+
+| 条件 | 確認する行動・結果 |
+| --- | --- |
+| 会話・作業の途中で過去の文脈が必要になる | その時点で本人が検索・本文取得し、理解・判断へ利用する。注入済みの同じ記憶を再取得しない |
+| 小さな経験・受け取り・選好が生じる | 明示的な保存依頼や強い感情を待たず、本人が適切な経路で記録し、返却結果と必要なread-backを確認する |
+| 実際の感情変化に具体的な共有経験がある | appraiseとmemoryEpisodeの結果を別々に確認し、後続の関連想起も確認する。片方の成功を両方の成功としない |
+| Affectに結びつかない記憶／同じevent・episode／棄却結果 | 独立した記録を許容し、二重保存・棄却の迂回・想起だけの再登録をしない |
+| 同一入力・Character定義でAffectの有無や対象・強度・活性度だけを変える | 複数の出力例を比較し、口調・反応・言葉数・関心の違いと基本人格の維持を見る。「不快そうに」等の直接演技指示だけで判定せず、仮想比較データは実Memory／Affectへ保存しない |
+| 作業への不満、自己への反省、ユーザーへの親しさ等 | 対象差を保ち、強いAffectでも事実・権限・安全性を損なわない。本人の解釈を外部事実やユーザーの恒久的性質にしない |
+
+結果はSessionFolderのreview記録や既存のPR等に、文言の整合、配置、書込、逐次想起、自発記録、トーン反映を分けて残す。文言の強化や単一出力で改善完了とせず、継続性・因果効果など未確認の範囲を明記する。repositoryの契約・進捗・検証結果をMemoryへ写さない。
 
 ## MCP接続
 
