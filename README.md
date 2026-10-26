@@ -63,7 +63,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 ## 課題管理とリリース
 
-本repositoryの不具合・機能要求・後追い課題は[natumekazuki/.claudeのGitHub Issues](https://github.com/natumekazuki/.claude/issues)を正本とする。対応versionの未指定はバックログとし、予定だけを理由に修正・統合・公開済みとは扱わない。Milestoneは使用しない。共通資産の修正は「Codex／Claude間の変更反映」に従い、必要な対応範囲を課題へ明記する。
+本repositoryの不具合・機能要求・後追い課題は[natumekazuki/.claudeのGitHub Issues](https://github.com/natumekazuki/.claude/issues)を正本とする。対応versionの未指定はバックログとし、予定だけを理由に修正・統合・公開済みとは扱わない。Milestoneは使用しない。共通資産の修正は「Codex／Claude／OpenCode間の変更反映」に従い、必要な対応範囲を課題へ明記する。
 
 通常の統合先・既定branchは`master`、正式版は`vMAJOR.MINOR.PATCH` tagとGitHub Releaseで識別する。版別の内容・確認・維持対象・既知制約は`docs/releases/vMAJOR.MINOR.PATCH.md`に記載する。repositoryはprivateで管理し、公開範囲の変更は別に承認を受ける。
 
@@ -179,12 +179,12 @@ claude --model claude-opus-5-5 --effort low
 
 roleの`model`と`effort`は[Claudeのfrontmatter](https://code.claude.com/docs/en/sub-agents#frontmatter-reference)で定義する。per-call指定、環境変数、project・managed定義等が選択へ影響するため、委譲規約に従って実効model・effort・toolを確認する。実設定・既存hook・認証・MCPを設定例全体で上書きしない。配置後は新しいsessionで担当の発見と`/tasks`の実モデルを確認し、読込成功だけを実taskの品質確認へ読み替えない。
 
-## Codex／Claude間の変更反映
+## Codex／Claude／OpenCode間の変更反映
 
-この節は`.codex`と`.claude`の保守にのみ適用し、共通ルールの適用先repositoryには適用しない。
+この節は`.codex`、`.claude`、OpenCode設定の保守にのみ適用し、共通ルールの適用先repositoryには適用しない。Codexを基本の正本とし、ClaudeとOpenCode（`~/.config/opencode`）は独立して完結する構成を保つ。
 
-- `.codex` と `.claude` は独立したrepositoryとして管理し、各repository内で規約・Skill・設定が完結する。相互importやリンク共有には依存しない。
-- 自分で保守するルール・Skill・設定例・hook方針のうち、両製品に共通する変更は、原則として同じ変更作業で双方へ反映する。
-- 反映では目的・制約・完了条件を揃える。モデル、tool、設定形式等の製品固有部分は、それぞれに適した定義を維持する。
-- 製品固有の変更でも、もう一方への影響を確認する。反映不要なら、その理由を作業報告に示す。
-- 双方の差分と必要な動作を確認し、反映・検証結果を報告する。
+- `.codex`、`.claude`、OpenCode設定は独立して完結させ、相互importやリンク共有に依存しない。
+- 共通ルール、自分で保守するSkill、設定例、通知方針の変更は、目的・制約・完了条件を揃えて同じ作業で3者へ反映する。モデル、tool、設定形式等の製品固有部分は各製品に適した定義を維持する。
+- ClaudeまたはOpenCode起点の共通改善はCodexへ逆反映する。製品固有の変更も他の2者への影響を確認し、反映しない場合は理由を作業報告に示す。
+- 認証情報、実config、Session URL・token、Memory、履歴、cache、外部managed Skillは同期対象外とする。
+- 3者の差分と必要な動作を確認し、反映・検証結果を報告する。
