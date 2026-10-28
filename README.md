@@ -35,6 +35,8 @@ model・effortと担当、権限、MCP、auto memory無効化の設定例は下�
 
 ## 導入と更新
 
+Session Graphの正本・Main/Auxiliary間の共有・表示はWithMateが担い、記録・復元の判断は[Session Graph Skill](skills/session-graph/SKILL.md)、呼出契約はruntimeのMCP instructions・tool説明・schemaに従う。定義変更時は入口・Skill・関連guideの整合と、必要な範囲で指示の先行記録、対象を絞った復元、全体置換時の情報保持、競合・結果不明時の再取得を確認する。配布元編集、live配置、Skill発見、MCP読書き、画面表示の確認を区別し、未実施を成功扱いしない。独自の保存・描画基盤や恒久testは追加しない。
+
 正式版のtagに対応するsource archiveまたはcheckoutを、端末localの実設定とは別のdirectoryで取得する。`CLAUDE.md`・`docs/`・`agents/`・自分で保守する`skills/`・`hooks/`・設定例をユーザーhome直下の`~/.claude/`へ配置する。既存の同名資産がある場合は差分を確認して反映し、directory全体を削除・置換しない。第三者のLICENSE・NOTICEとSkill内のreference・script・assetも保持する。
 
 `settings.example.json`は必要な項目だけを既存の`settings.json`へ統合する。theme・更新channel・既存hook・project/local/managed設定を設定例全体で上書きしない。個人MCPは「MCP接続」に従ってuser scopeへ個別登録する。WithMateのMemory／Glossary MCPはSessionへ自動供給されるため手動登録しない。既存登録・認証・Session binding実値は移動・複製しない。`skills/synced/`とWithMate管理Skill、既存Memory・履歴はこの配布物に含めず、更新時も保持する。
@@ -43,7 +45,7 @@ model・effortと担当、権限、MCP、auto memory無効化の設定例は下�
 
 | 機能 | 依存 |
 | --- | --- |
-| Session Graphの保存helper | Python 3.10以降 |
+| Session Graph | WithMateからSessionへ提供されるSession-bound MCP |
 | review-test-valueの抽出器 | Python 3.11以降（`tomllib`を使用）、Git |
 | TypeScriptのtest抽出 | Node.js、npm、Skill内のlockfileに従う依存 |
 | C#のtest抽出 | .NET 8の実行環境と対応SDK。Skill内のprojectをlocked restoreでbuildする |
@@ -67,7 +69,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 通常の統合先・既定branchは`master`、正式版は`vMAJOR.MINOR.PATCH` tagとGitHub Releaseで識別する。版別の内容・確認・維持対象・既知制約は`docs/releases/vMAJOR.MINOR.PATCH.md`に記載する。repositoryはprivateで管理し、公開範囲の変更は別に承認を受ける。
 
-維持対象は、利用者が直接使うSkill名と導入・配置の入口、release noteで指定するreview-test-valueのCLI/result・metadata・source adapter・Git差分選択、およびSession GraphのCLIと既存共有記録の保存・競合・cleanup契約とする。実設定・認証・既存Memory・既存共有記録等の利用者データはtagの有無にかかわらず保護する。外部サービスのmodel提供・費用・出力品質やWithMateの製品動作まで本repositoryの互換性保証へ含めない。
+維持対象は、利用者が直接使うSkill名と導入・配置の入口、release noteで指定するreview-test-valueのCLI/result・metadata・source adapter・Git差分選択、およびSession Graph SkillのMCP利用方針とする。Session Graphの操作・schema・競合制御はruntimeが提供するMCP契約を正本とする。実設定・認証・既存Memory・既存共有記録等の利用者データはtagの有無にかかわらず保護する。外部サービスのmodel提供・費用・出力品質やWithMateの製品動作まで本repositoryの互換性保証へ含めない。
 
 内部実装、指示の表現、開始値としてのmodel/effort、fixture、文書構成全体は、それ自体を固定しない。公表した維持契約を損なわない改善は可能とする。認証・認可・個別操作の承認境界を弱める変更は、version番号だけで許可しない。
 
@@ -141,6 +143,8 @@ foreach ($entry in $mcpEntries.PSObject.Properties) {
 ```
 
 ### WithMateのmanaged HTTP接続
+
+Session GraphはWithMateから現在のSessionへ提供されるMCPを使用する。操作名・引数・schema・bindingはそのSessionのruntime提供を正本とし、user scopeやproject設定へ接続値を固定しない。Skillの静的確認とClaude providerでの実接続・読書きの確認は分け、未実施のruntime確認を成功扱いしない。
 
 WithMate 6.3.29はClaude provider Sessionへ、共有localhost HTTP MCPの`withmate-memory`と`withmate-glossary`を自動供給する。endpointはそれぞれ`/mcp/memory`と`/mcp/glossary`である。接続URLと当turnの短命tokenは一時設定で渡されるため、user scopeやproject設定へ登録せず、設定例・実登録・ログへ保存しない。
 
