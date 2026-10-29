@@ -18,11 +18,11 @@ read-only依頼にも同じ判断基準を使い、tool制限を持つ`read-only
 
 ## runtimeと権限
 
-ユーザーの明示指定は尊重し、指定がなければ上記の担当分けと開始値を使う。他製品のモデル名、role名、tool引数を流用しない。指定modelがruntimeで利用できない場合は許可された構成の親で可能な範囲を続ける。親の自己評価で審査済みにしない。
+ユーザーの明示指定は尊重し、指定がなければ上記の担当分けと開始値を使う。指定modelがruntimeで利用できない場合は許可された構成の親で可能な範囲を続ける。親の自己評価で審査済みにしない。
 
 role名だけで実modelを推測せず、起動するsessionのmodel IDとeffortを確認する。Claudeではper-callのmodelがfrontmatterより優先され、`CLAUDE_CODE_EFFORT_LEVEL`は担当別effortより優先される。`CLAUDE_CODE_SUBAGENT_MODEL_FORCE`で全担当を同じmodelへ固定したり、一律のeffort環境変数で担当の開始値を潰したりしない。project・managedの同名定義やhost設定が優先される場合は、その実体と実効値を確認する。
 
-Opus親からOpus子への禁止は委譲時の規約であり、機械的な拒否hookは提供していない。ClaudeのPreToolUseは親modelを受け取らず、他製品のevent fieldを前提としたguardを流用しない。
+親は起動前に自分のmodelと委譲先を確認し、上記の担当分けに従って子を選ぶ。
 
 Agent起動は現在のtool schemaに従う。対象・必要な文脈・完了条件を起動時の依頼へ含め、親の会話や既読fileが子へ渡ることを前提にしない。設定例は`CLAUDE_CODE_FORK_SUBAGENT=0`で履歴forkを無効にし、`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`で子から孫への委譲を無効にする。必要な資料だけを渡す通常の独立した委譲を使い、設定例を配置しただけで実効性を確認済みとしない。
 
@@ -30,7 +30,7 @@ read-onlyの依頼は文面だけでなく、利用するagentのtool制限と�
 
 本repositoryの汎用read-only担当は[`agents/read-only.md`](../../agents/read-only.md)である。toolはRead・Glob・Grepだけに限定する。review観点は依頼ごとに渡し、test専用roleにはしない。runtimeでこの担当と有効なtool構成を確認し、同名のproject・managed定義が優先される場合はその実体を確認する。
 
-待機・再開・結果取得はClaudeの現在のAgent契約に従い、通知と完了見込みを使う。短い間隔のポーリングや、他製品の待機toolの引数を持ち込まない。
+待機・再開・結果取得はClaudeの現在のAgent契約に従い、通知と完了見込みを使う。短い間隔のポーリングを避ける。
 
 ## 統合と成果返却
 

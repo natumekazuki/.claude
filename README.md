@@ -65,7 +65,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 ## 課題管理とリリース
 
-本repositoryの不具合・機能要求・後追い課題は[natumekazuki/.claudeのGitHub Issues](https://github.com/natumekazuki/.claude/issues)を正本とする。対応versionの未指定はバックログとし、予定だけを理由に修正・統合・公開済みとは扱わない。Milestoneは使用しない。共通資産の修正は「Codex／Claude／OpenCode間の変更反映」に従い、必要な対応範囲を課題へ明記する。
+本repositoryの不具合・機能要求・後追い課題は[natumekazuki/.claudeのGitHub Issues](https://github.com/natumekazuki/.claude/issues)を正本とする。各課題の対応予定はIssueで扱い、対応versionの未指定はバックログとする。予定だけを理由に修正・統合・公開済みとは扱わない。共通資産の修正は「Codex／Claude／OpenCode間の変更反映」に従い、必要な対応範囲を課題へ明記する。
 
 通常の統合先・既定branchは`master`、正式版は`vMAJOR.MINOR.PATCH` tagとGitHub Releaseで識別する。版別の内容・確認・維持対象・既知制約は`docs/releases/vMAJOR.MINOR.PATCH.md`に記載する。repositoryはprivateで管理し、公開範囲の変更は別に承認を受ける。
 
@@ -79,18 +79,18 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 ## 権限と実行環境
 
-設定例の`permissions`を端末localの`settings.json`へ反映し、`acceptEdits`を既定にする。Codexのworkspace-writeと必要時のユーザー承認に近づける設定であり、同等の隔離ではない。
+設定例の`permissions`を端末localの`settings.json`へ反映し、`acceptEdits`を既定にする。
 
 | 対象 | 設定・扱い |
 | --- | --- |
 | 作業範囲の編集 | working directoryと明示的な追加directoryのfile編集、Claudeが認識する一般filesystem操作を自動許可する |
-| shell command | Bash・PowerShellの包括allowは置かない。組込みread-only等を除き、一般commandの承認確認を残すため、Codexのsandbox内実行より確認が増える |
+| shell command | Bash・PowerShellの包括allowは置かない。組込みread-only等を除き、一般commandの承認確認を残す |
 | Webの読み取り | `WebSearch`と`WebFetch`をallowする。shellの通信、MCP、外部writeの承認を一括許可するものではない |
 | 追加directory | taskに必要な範囲を`--add-dir <path>`または`/add-dir`で追加する。home全体、別repository、SessionFolderの実pathを共通設定へ固定しない |
 
 依頼範囲、read-only、外部write・破壊的操作・push・default/protected branchへのcommit等の個別承認は`CLAUDE.md`の操作境界に従う。toolの自動許可は操作自体の承認を代替しない。`.git`・`.claude`等の保護pathにはClaude固有の追加確認があり、`acceptEdits`はそれを一括解除しない。既定を`auto`や`bypassPermissions`にはしない。
 
-[Claude公式のsandbox仕様](https://code.claude.com/docs/en/sandboxing)ではNative Windowsのshell commandはOS sandboxなしで実行される。承認したcommandとその子processを、CodexのWindows elevated sandboxのように作業範囲へ隔離できない。Read/Editのpath規則やcommand文字列の許可規則も、任意のscriptや子processのfilesystem・networkアクセスを隔離する代替にはならない。非対応環境で隔離済みと見せるsandbox設定は置かない。同等のOS隔離が必要な運用では、WSL2・container等の対応環境とそのsandbox設定を別途選定する。
+[Claude公式のsandbox仕様](https://code.claude.com/docs/en/sandboxing)ではNative Windowsのshell commandはOS sandboxなしで実行され、承認したcommandとその子processは作業範囲に隔離されない。Read/Editのpath規則やcommand文字列の許可規則も、任意のscriptや子processのfilesystem・networkアクセスを隔離する代替にはならない。OS隔離が必要な運用では、WSL2・container等の対応環境とそのsandbox設定を別途選定する。
 
 設定例は個人の開始値であり、managed policyを置換しない。project/local設定、CLI・host指定等が実効値へ影響する。[設定の優先順位](https://code.claude.com/docs/en/settings#settings-precedence)に従い、新しいsessionで`/status`と`/permissions`から読込元・mode・規則を確認する。起動成功と、承認dialogや隔離の実動作確認は分ける。
 
@@ -126,8 +126,6 @@ Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で�
 | 登録名 | 接続・前提 |
 | --- | --- |
 | `openaiDeveloperDocs` | [OpenAI Docs](https://developers.openai.com/learn/docs-mcp)の公開read-only HTTP接続。OpenAI APIの実行権限や認証情報は不要 |
-
-Codexの`node_repl`はCodex専用runtime・pluginに依存するため登録対象ではない。ブラウザー用の代替を追加する場合は、既存Skillと実際に利用できる手段を別途照合する。
 
 次の例はPowerShell 7.3以降で、未登録の各entryを個別に追加する。既存の同名entryがある場合は実登録と設定例を比較し、追加commandで置換しない。
 
