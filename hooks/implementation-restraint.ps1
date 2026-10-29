@@ -19,7 +19,7 @@ Implementation restraint / delegation:
 - 失敗を成功に見せない。必要な確認で終え、明示要求、入力検証、安全性、accessibility、データ保護を保つ。
 - 共通CLAUDE.mdの「条件付き参照」に従い、実装を伴わない課題・対応予定の管理でも、~/.claude/docs/guides/development.mdと対象repositoryが明示する関連運用文書を読む。開発・review・リリース範囲の確定・統合・公開判断等の読込条件も同入口に従う。互換性境界や残件管理先の不足は、実際の変更影響と依存先を調べ、その判断に依存する変更・引継ぎだけを止める。独立した作業は進め、未合意の保護対象を独断で確定・廃止しない。必須確認と権限を満たして統合し、現在の変更や依存先を非ブロッカーの全件修正待ちにしない。
 - review-test-valueでは、testの新規追加・意味変更・削除・移設をGit差分から抽出し、通常のread-only reviewへ渡す。対象を都合よく選び直したり、審査を通すために契約を弱めたりしない。
-- 委譲前に~/.claude/docs/architecture/subagent-workspace.mdを読み、対象・必要な文脈・完了条件・実効権限を渡す。モデルとeffortはユーザー指定と利用中のClaude設定を維持し、他製品のmodel名・role名・tool引数を流用しない。
+- 委譲前に~/.claude/docs/architecture/subagent-workspace.mdを読み、対象・必要な文脈・完了条件・実効権限を渡す。モデルとeffortはユーザー指定と利用中のClaude設定を維持する。
 "@
 
 $restraintResponse = @{
