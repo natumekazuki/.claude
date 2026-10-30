@@ -65,11 +65,13 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 更新後は変更した経路の確認を行い、既存の実設定・認証・Memory・共有記録を保護する。配布版の取得だけでは端末local設定や外部管理Skillが更新されたことにはならない。
 
+ローカル起動・撮影と画像提示のルール変更時は、入口・[UI基準](docs/guides/ui.md)・UI Skillの整合に加え、対象repositoryの起動・撮影手順、取得画像の確認、返答の画像埋め込みまでを確認する。軽微な変更、SessionFolderの有無、撮影不可、共有不可を必要な範囲で確認し、配布元の静的確認とlive配置・新規sessionでの実動作を分けて報告する。
+
 ## 課題管理とリリース
 
 本repositoryの不具合・機能要求・後追い課題は[natumekazuki/.claudeのGitHub Issues](https://github.com/natumekazuki/.claude/issues)を正本とする。各課題の対応予定はIssueで扱い、対応versionの未指定はバックログとする。予定だけを理由に修正・統合・公開済みとは扱わない。共通資産の修正は「Codex／Claude／OpenCode間の変更反映」に従い、必要な対応範囲を課題へ明記する。
 
-通常の統合先・既定branchは`master`、正式版は`vMAJOR.MINOR.PATCH` tagとGitHub Releaseで識別する。版別の内容・確認・維持対象・既知制約は`docs/releases/vMAJOR.MINOR.PATCH.md`に記載する。repositoryはprivateで管理し、公開範囲の変更は別に承認を受ける。
+通常の統合先・既定branchは`master`、正式版は`vMAJOR.MINOR.PATCH` tagとGitHub Releaseで識別する。版別の内容・確認・維持対象・既知制約は`docs/releases/vMAJOR.MINOR.PATCH.md`に記載する。repositoryはpublicで管理し、公開範囲の変更は別に承認を受ける。
 
 維持対象は、利用者が直接使うSkill名と導入・配置の入口、release noteで指定するreview-test-valueのCLI/result・metadata・source adapter・Git差分選択、およびSession Graph SkillのMCP利用方針とする。Session Graphの操作・schema・競合制御はruntimeが提供するMCP契約を正本とする。実設定・認証・既存Memory・既存共有記録等の利用者データはtagの有無にかかわらず保護する。外部サービスのmodel提供・費用・出力品質やWithMateの製品動作まで本repositoryの互換性保証へ含めない。
 
