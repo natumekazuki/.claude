@@ -2,8 +2,6 @@
 
 本書はこのrepositoryの保守とGit管理対象の案内である。本書の保守規則を、Claudeが作業する他repositoryのルールとして適用しない。
 
-通常の作業・会話はWithMateを標準環境とする。機能ごとの利用契機と、接続失敗・情報欠落時の扱いは共通入口に従う。
-
 共通ルールは責務に基づく既存実装の削減と過剰追加の抑制、統合優先・修正分離、変更testの価値確認、ユーザー向けUIの設計品質を中心にする。ユーザー変更の保護、操作範囲、承認条件、必要な安全動作は維持する。
 
 ## Git管理対象
@@ -115,7 +113,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 ## 会話をまたぐ記憶
 
-Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起はWithMate Memoryを使用する。通常会話での能動的なMemory読取、背景実行との責務分担、Character Affectの反映、継続的な許可・保存範囲は[WithMate利用方針](docs/guides/withmate.md)、利用可能な操作・探索例・呼出契約は現在提供されているMCP instructions・tool説明・schemaに従う。WithMateを利用できない場合も、Claude auto memoryや別の記憶storeを代替として作らない。
+Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起はWithMate Memoryを使用する。通常会話での能動的なMemory読取、背景実行との責務分担、Character Affectの反映、継続的な許可・保存範囲は[Memory・Affect・共有情報の利用](docs/guides/withmate.md)、利用可能な操作・探索例・呼出契約は現在提供されているMCP instructions・tool説明・schemaに従う。Memoryの取得に失敗しても、Claude auto memoryや別の記憶storeを代替として作らない。
 
 [Claude公式の無効化設定](https://code.claude.com/docs/en/memory#enable-or-disable-auto-memory)を使用し、[サブエージェントのpersistent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory)も無効にする。既存の記憶fileを削除・移行する設定ではなく、`CLAUDE.md`等の明示的な指示の読込は維持する。設定例・実設定に記憶directoryの置換や削除処理を追加しない。
 
@@ -123,7 +121,7 @@ Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で�
 
 ### Memory・Affect方針の検証
 
-通常会話での能動的な読取、背景実行との責務分担、Affectの反映は[WithMate利用方針](docs/guides/withmate.md)、利用可能な操作・引数・scope等は現在のMCP／CLI提供契約を正本とする。[WithMate v6.5の公開仕様](https://github.com/natumekazuki/WithMate/blob/fa065474528a307a5144437d79aa062f6806b888/docs/releases/v6.5.0-preview.0.md)ではMemoryの自動注入を行わず、MemoryとAffectの自動登録は背景実行が担う。方針変更時は入口の読込条件、guide、提供契約を照合する。
+通常会話での能動的な読取、背景実行との責務分担、Affectの反映は[Memory・Affect・共有情報の利用](docs/guides/withmate.md)、利用可能な操作・引数・scope等は現在のMCP／CLI提供契約を正本とする。[WithMate v6.5の公開仕様](https://github.com/natumekazuki/WithMate/blob/fa065474528a307a5144437d79aa062f6806b888/docs/releases/v6.5.0-preview.0.md)ではMemoryの自動注入を行わず、MemoryとAffectの自動登録は背景実行が担う。方針変更時は入口の読込条件、guide、提供契約を照合する。
 
 変更範囲に応じて次の観点を確認する。実Memory・Affectへの架空の経験・情動の書込みや、恒久test基盤の追加は行わない。
 
@@ -168,7 +166,7 @@ WithMate 6.3.29はClaude provider Sessionへ、共有localhost HTTP MCPの`withm
 
 WithMateから新しいClaude Sessionを開始し、そのSessionへ公開された`tools/list`と必要なread-only操作で接続を確認する。通常のCLIによる永続登録の一覧だけで、一時設定の接続成否を判定しない。接続確認だけを目的にMemory・Affect・Glossaryを書き込まない。手動登録もある場合は同じ機能の重複と利用経路を確認し、第三者MCPを一括変更しない。
 
-未接続やbindingエラーでは起動元WithMateとSessionの対応を確認し、URL・tokenを推測したり別Sessionの値を転用したりしない。利用条件と再試行・CLI fallbackの可否は、現在のMCP instructions・tool説明・schema、[WithMate利用方針](docs/guides/withmate.md)とruntime-managed Skillに従う。登録・接続・Session-bound toolの実動作確認は分ける。接続設定はtoolの包括許可や外部writeの承認を付与しない。
+未接続やbindingエラーでは起動元WithMateとSessionの対応を確認し、URL・tokenを推測したり別Sessionの値を転用したりしない。利用条件と再試行・CLI fallbackの可否は、現在のMCP instructions・tool説明・schema、[Memory・Affect・共有情報の利用](docs/guides/withmate.md)とruntime-managed Skillに従う。登録・接続・Session-bound toolの実動作確認は分ける。接続設定はtoolの包括許可や外部writeの承認を付与しない。
 
 ### 手動STDIOによる開発・診断
 
