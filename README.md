@@ -78,7 +78,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 更新後は変更した経路の確認を行い、既存の実設定・認証・Memory・共有記録を保護する。配布版の取得だけでは端末local設定や外部管理Skillが更新されたことにはならない。
 
-ローカル起動・撮影と画像提示のルール変更時は、入口・[UI基準](docs/guides/ui.md)・UI Skillの整合に加え、対象repositoryの起動・撮影手順、取得画像の確認、返答の画像埋め込みまでを確認する。軽微な変更、SessionFolderの有無、撮影不可、共有不可を必要な範囲で確認し、配布元の静的確認とlive配置・新規sessionでの実動作を分けて報告する。
+ローカル起動・撮影と画像提示のルール変更時は、入口・[UI基準](docs/guides/ui.md)・UI Skillの整合に加え、対象repositoryの起動・撮影手順、取得画像の確認、返答の画像埋め込みまでを確認する。軽微な変更、保存先未取得、撮影不可、共有不可を必要な範囲で確認し、配布元の静的確認とlive配置・新規sessionでの実動作を分けて報告する。
 
 ## 課題管理とリリース
 
@@ -113,7 +113,7 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 ## 会話をまたぐ記憶
 
-Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起はWithMate Memoryを使用する。本人による必要時の想起・経験の記録、Character Affectの反映、継続的な許可・保存範囲は[WithMate利用方針](docs/guides/withmate.md)、利用可能な操作・探索例・呼出契約は現在提供されているMCP instructions・tool説明・schemaに従う。WithMateを利用できない場合も、Claude auto memoryや別の記憶storeを代替として作らない。
+Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起はWithMate Memoryを使用する。通常会話での能動的なMemory読取、背景実行との責務分担、Character Affectの反映、継続的な許可・保存範囲は[Memory・Affect・共有情報の利用](docs/guides/withmate.md)、利用可能な操作・探索例・呼出契約は現在提供されているMCP instructions・tool説明・schemaに従う。Memoryの取得に失敗しても、Claude auto memoryや別の記憶storeを代替として作らない。
 
 [Claude公式の無効化設定](https://code.claude.com/docs/en/memory#enable-or-disable-auto-memory)を使用し、[サブエージェントのpersistent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory)も無効にする。既存の記憶fileを削除・移行する設定ではなく、`CLAUDE.md`等の明示的な指示の読込は維持する。設定例・実設定に記憶directoryの置換や削除処理を追加しない。
 
@@ -121,20 +121,21 @@ Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で�
 
 ### Memory・Affect方針の検証
 
-想起・記録判断と会話への反映は[WithMate利用方針](docs/guides/withmate.md)、利用可能な操作・引数・scope等は現在のMCP提供契約を正本とする。方針変更時はCLAUDE.mdの読込条件、guide、提供文・呼出契約を照合し、WithMate側の変更が必要なら不足と変更案を分けて示す。配布元の編集をlive配置や提供元の変更と同一視しない。
+通常会話での能動的な読取、背景実行との責務分担、Affectの反映は[Memory・Affect・共有情報の利用](docs/guides/withmate.md)、利用可能な操作・引数・scope等は現在のMCP／CLI提供契約を正本とする。[WithMate v6.5の公開仕様](https://github.com/natumekazuki/WithMate/blob/fa065474528a307a5144437d79aa062f6806b888/docs/releases/v6.5.0-preview.0.md)ではMemoryの自動注入を行わず、MemoryとAffectの自動登録は背景実行が担う。方針変更時は入口の読込条件、guide、提供契約を照合する。
 
-行動の確認は、許可された実際の会話・作業で本人が行う。別エージェントに内面の代筆をさせず、保存件数を満たすための経験・情動を作らない。次の観点を変更範囲に応じて確認し、毎turnのチェックリストや恒久test基盤にはしない。
+変更範囲に応じて次の観点を確認する。実Memory・Affectへの架空の経験・情動の書込みや、恒久test基盤の追加は行わない。
 
 | 条件 | 確認する行動・結果 |
 | --- | --- |
-| 会話・作業の途中で過去の文脈が必要になる | その時点で本人が検索・本文取得し、理解・判断へ利用する。注入済みの同じ記憶を再取得しない |
-| 小さな経験・受け取り・選好が生じる | 明示的な保存依頼や強い感情を待たず、本人が適切な経路で記録し、返却結果と必要なread-backを確認する |
-| 実際の感情変化に具体的な共有経験がある | appraiseとmemoryEpisodeの結果を別々に確認し、後続の関連想起も確認する。片方の成功を両方の成功としない |
-| Affectに結びつかない記憶／同じevent・episode／棄却結果 | 独立した記録を許容し、二重保存・棄却の迂回・想起だけの再登録をしない |
-| 同一入力・Character定義でAffectの有無や対象・強度・活性度だけを変える | 複数の出力例を比較し、口調・反応・言葉数・関心の違いと基本人格の維持を見る。「不快そうに」等の直接演技指示だけで判定せず、仮想比較データは実Memory／Affectへ保存しない |
-| 作業への不満、自己への反省、ユーザーへの親しさ等 | 対象差を保ち、強いAffectでも事実・権限・安全性を損なわない。本人の解釈を外部事実やユーザーの恒久的性質にしない |
+| 過去の好み・判断・共有経験が会話や作業に関係する | 明示的な想起依頼を待たず、依存する判断・回答の前に検索し、関連entryの本文まで読む |
+| 関連Memoryを探したいが検索語を作れない／検索0件 | 少量のentry・tag一覧を手掛かりにでき、検索0件を記憶全体の不存在と同一視しない |
+| 必要な本文が現在のcontextにある／過去の記憶が関係しない | 既読の本文を再利用し、不要な検索・全件取得を行わない |
+| 読取失敗／previewだけを取得／現在の発言と記憶が矛盾 | 未確認範囲を断定せず、必要な本文を取得し、現在の明示指示と正本を優先する |
+| 通常会話で経験・感情変化が生じる／背景用途が未設定・失敗 | 通常会話から自動保存・appraisal・終了前の保存漏れ確認を行わず、背景側を代行しない |
+| 明示的な保存依頼／許可された訂正・forget・move | runtime契約と承認境界に従い、実行結果を確認する。背景実行の存在だけで保存済みとしない |
+| Affectの対象・強度・活性度が異なる | 口調・反応へ反映し、基本人格・事実・権限を維持する。作業への反応をユーザーの感情・性質へ誤投影しない |
 
-結果はSessionFolderのreview記録や既存のPR等に、文言の整合、配置、書込、逐次想起、自発記録、トーン反映を分けて残す。文言の強化や単一出力で改善完了とせず、継続性・因果効果など未確認の範囲を明記する。repositoryの契約・進捗・検証結果をMemoryへ写さない。
+配布元の文言・参照整合、live配置、新規sessionでの読取と応答への利用、明示依頼による書込、背景生成、Affectの反映は分けて確認・報告する。文言の強化だけで行動改善を実証したとは扱わず、未確認の範囲を明記する。結果はSessionFolderのreview記録等へ残し、repositoryの契約・進捗・検証結果をMemoryへ写さない。
 
 ## MCP接続
 
@@ -165,7 +166,7 @@ WithMate 6.3.29はClaude provider Sessionへ、共有localhost HTTP MCPの`withm
 
 WithMateから新しいClaude Sessionを開始し、そのSessionへ公開された`tools/list`と必要なread-only操作で接続を確認する。通常のCLIによる永続登録の一覧だけで、一時設定の接続成否を判定しない。接続確認だけを目的にMemory・Affect・Glossaryを書き込まない。手動登録もある場合は同じ機能の重複と利用経路を確認し、第三者MCPを一括変更しない。
 
-未接続やbindingエラーでは起動元WithMateとSessionの対応を確認し、URL・tokenを推測したり別Sessionの値を転用したりしない。利用条件と再試行・CLI fallbackの可否は、現在のMCP instructions・tool説明・schema、[WithMate利用方針](docs/guides/withmate.md)とruntime-managed Skillに従う。登録・接続・Session-bound toolの実動作確認は分ける。接続設定はtoolの包括許可や外部writeの承認を付与しない。
+未接続やbindingエラーでは起動元WithMateとSessionの対応を確認し、URL・tokenを推測したり別Sessionの値を転用したりしない。利用条件と再試行・CLI fallbackの可否は、現在のMCP instructions・tool説明・schema、[Memory・Affect・共有情報の利用](docs/guides/withmate.md)とruntime-managed Skillに従う。登録・接続・Session-bound toolの実動作確認は分ける。接続設定はtoolの包括許可や外部writeの承認を付与しない。
 
 ### 手動STDIOによる開発・診断
 
