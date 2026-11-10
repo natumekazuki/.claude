@@ -8,5 +8,6 @@ License: MIT (see LICENSE)
 This directory is maintained independently in the Claude configuration repository.
 Local adaptations route technical-document structure and Markdown formatting to
 japanese-tech-writing-review and provide a concise write/score router with local
-write and score workflow adjustments. Explicit-only invocation is configured with
+write and score workflow adjustments, including purpose-based content selection
+for document types and writing guidance. Explicit-only invocation is configured with
 disable-model-invocation in SKILL.md.
