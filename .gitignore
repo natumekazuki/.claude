@@ -22,3 +22,6 @@ __pycache__/
 # 外部サービスが管理するSkill
 /skills/synced/
 /skills/withmate-glossary/
+
+# 利用者が保持する非配布の端末固有資料
+/withmate.local.md
