@@ -22,3 +22,6 @@ __pycache__/
 # 外部サービスが管理するSkill
 /skills/synced/
 /skills/withmate-glossary/
+
+# 環境固有のWithMate配置・利用経路・選定方針
+/withmate.local.md
