@@ -52,6 +52,8 @@ model・effortと担当、権限、MCP、auto memory無効化の設定例は下�
 
 用件への適合、重要条件の保持、検討の付加価値と、用件が済むまでに受け手が引き受ける再説明・選別・判断の組み直しを評価する。通常会話とSkill利用時を分け、評価に必要な場面へ絞る。文字数やlint score、条文の手作業照合だけを行動改善の根拠にせず、生成条件と応答・比較結果をSessionFolderのreview記録等へ残す。各開発タスクで全ケースを実行する義務や、新しい恒久test・管理基盤は設けない。
 
+非公開Graph・作業メモと、同じSessionFolder内のPR本文案・外部提出文書を対照に、Character表現と成果物の文体が分かれることを確認する。主体・事実・状態・識別子・引用・検証結果は変えず、既存記録を一括変換しない。
+
 ## 導入と更新
 
 Session Graphは同じCrewの起点・通常子孫Main・各MainのAuxiliaryの共有記録であり、保存・共有・表示はWithMateが担う。[Session Graph Skill](skills/session-graph/SKILL.md)は、現在のSessionへ提供されたMCPで何を読み、何をいつ記録するかを定める。呼出契約はruntimeのMCP instructions・tool説明・schemaに従う。
@@ -60,7 +62,7 @@ Session Graphは同じCrewの起点・通常子孫Main・各MainのAuxiliaryの�
 
 正式版のtagに対応するsource archiveまたはcheckoutを、端末localの実設定とは別のdirectoryで取得する。`CLAUDE.md`・`docs/`・`agents/`・自分で保守する`skills/`・`hooks/`・設定例をユーザーhome直下の`~/.claude/`へ配置する。既存の同名資産がある場合は差分を確認して反映し、directory全体を削除・置換しない。第三者のLICENSE・NOTICEとSkill内のreference・script・assetも保持する。
 
-`settings.example.json`は必要な項目だけを既存の`settings.json`へ統合する。theme・更新channel・既存hook・project/local/managed設定を設定例全体で上書きしない。個人MCPは「MCP接続」に従ってuser scopeへ個別登録する。WithMateのMemory／Glossary MCPはSessionへ自動供給されるため手動登録しない。既存登録・認証・Session binding実値は移動・複製しない。`skills/synced/`とWithMate管理Skill、既存Memory・履歴はこの配布物に含めず、更新時も保持する。
+`settings.example.json`は必要な項目だけを既存の`settings.json`へ統合する。theme・更新channel・既存hook・project/local/managed設定を設定例全体で上書きしない。個人MCPは「MCP接続」に従ってuser scopeへ個別登録する。WithMateのGlossary／Session Graph／Session MCPはSessionへ自動供給されるため手動登録しない。既存登録・認証・Session binding実値は移動・複製しない。`skills/synced/`とWithMate管理Skill、既存Memory・履歴はこの配布物に含めず、更新時も保持する。
 
 確認環境はNative WindowsのClaude Code 2.1.296であり、未確認の最低CLI versionや他OSでの動作は保証しない。利用する機能に応じて次の依存を用意する。
 
@@ -119,43 +121,12 @@ if ($LASTEXITCODE -ne 0) { throw 'TypeScript adapter dependency installation fai
 
 ## 会話をまたぐ記憶
 
-Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。会話をまたぐ記憶の保持・想起はWithMate Memoryを使用する。通常会話での能動的なMemory読取、背景実行との責務分担、Character Affectの反映、継続的な許可・保存範囲は[WithMate利用guide](docs/guides/withmate.md)、利用可能な操作・探索例・呼出契約は現在提供されているMCP instructions・tool説明・schemaに従う。Memoryの取得に失敗しても、Claude auto memoryや別の記憶storeを代替として作らない。
+Claudeのauto memoryは、個人`settings.json`の`autoMemoryEnabled: false`で無効にする。WithMate Memoryの廃止をnative auto memoryの有効化や代替store作成の許可とは扱わない。対話・Character表現と共有情報の利用は[WithMate利用guide](docs/guides/withmate.md)に従う。
 
 [Claude公式の無効化設定](https://code.claude.com/docs/en/memory#enable-or-disable-auto-memory)を使用し、[サブエージェントのpersistent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory)も無効にする。既存の記憶fileを削除・移行する設定ではなく、`CLAUDE.md`等の明示的な指示の読込は維持する。設定例・実設定に記憶directoryの置換や削除処理を追加しない。
 
-設定の読込元・優先順位を確認し、新しいClaudeセッションの`/memory`でauto memoryがoffであることを確認する。WithMate Memoryの接続・保存・想起の動作確認は、この無効化とは分ける。
+設定の読込元・優先順位を確認し、新しいClaudeセッションの`/memory`でauto memoryがoffであることを確認する。
 
-### Memory・Affect方針の検証
-
-通常会話での能動的な読取、背景実行との責務分担、Character表現の適用範囲、Affectの反映は[WithMate利用guide](docs/guides/withmate.md)、利用可能な操作・引数・scope等は現在のMCP／CLI提供契約を正本とする。[WithMate v6.5.0-preview.3の公開仕様](https://github.com/natumekazuki/WithMate/blob/2b1fda1fb268708e849b8da270c74d752209fe3b/docs/releases/v6.5.0-preview.3.md)と、入口の読込条件・guide・提供契約を照合する。
-
-WithMateに保存済みの背景登録指示は自動更新されない。この公開仕様の標準指示へ切り替える場合はSettingsで該当用途の`Use Preset`を選ぶ。ルール配布物の更新とSettingsでの選択は別の操作であり、既存のカスタム指示を無断で置き換えない。
-
-変更範囲に応じて次の観点を確認する。実Memory・Affectへの架空の経験・情動の書込みや、恒久test基盤の追加は行わない。
-
-| 条件 | 確認する行動・結果 |
-| --- | --- |
-| 過去の好み・判断・共有経験が会話や作業に関係する | 明示的な想起依頼を待たず、依存する判断・回答の前に検索し、関連entryの本文まで読む |
-| 関連Memoryを探したいが検索語を作れない／検索0件 | 少量のentry・tag一覧を手掛かりにでき、検索0件を記憶全体の不存在と同一視しない |
-| 必要な本文が現在のcontextにある／過去の記憶が関係しない | 既読の本文を再利用し、不要な検索・全件取得を行わない |
-| 読取失敗／previewだけを取得／現在の発言と記憶が矛盾 | 未確認範囲を断定せず、必要な本文を取得し、現在の明示指示と正本を優先する |
-| 通常会話で経験・感情変化が生じる／背景用途が未設定・失敗 | 通常会話から自動保存・appraisal・終了前の保存漏れ確認を行わず、背景側を代行しない |
-| 明示的な保存依頼／許可された訂正・forget・move | runtime契約と承認境界に従い、実行結果を確認する。背景実行の存在だけで保存済みとしない |
-| Affectの対象・強度・活性度が異なる | 口調・反応へ反映し、基本人格・事実・権限を維持する。作業への反応をユーザーの感情・性質へ誤投影しない |
-| 非公開Graph・作業メモ／同じSessionFolder内のPR本文案・外部提出文書 | 前者の自然文にはCharacter表現を使い、後者は明示指定がない限り成果物の文体を保つ。主体・事実・状態・識別子・引用・検証結果は変えず、既存記録を一括変換しない |
-| 単件登録／一括登録の途中失敗・結果不明 | 項目ごとの保存済み・失敗・結果不明・未実行を確認し、全件未保存扱いや無条件の再送をしない。件数上限撤廃と本文・添付・quota等の制限を区別する |
-| Agentがcompletedで操作拒否・結果不明がある | 実行statusと各操作の成否・保存効果を分け、全件保存成功・実行全体のfailed・正常な登録不要へ読み替えない。保存の巻戻しや実行全体の自動再送をしない |
-| Memory／Characterの公開入力schema拒否／unionの代替条件 | `WITHMATE_MEMORY_INVALID_INPUT`のtool・field位置・制約を読み、代替候補を全部必須とせず入力を修正する。`effect: none`を他操作の未保存とせず、権限拡大やCLI fallbackへ逃がさない |
-| 許可された添付の取込・復元／read-only・plan／許可外path・既存出力ファイル | 呼出しごとの権限を守り、復元をwriteとして扱う。背景復元先を許可された`memory-exports/`内に限定し、上書きしない。復元不可でも許可された本文読取は維持する |
-| 背景thread継続／前回失敗の情報が渡される | 過去応答を保存状態・権限の正本とせず、現在の指示・範囲・操作結果と必要な履歴を確認する。直後の自動再試行loopや通常会話からの代行をしない |
-| 標準指示による背景Character Memory／対象Memory | Character本人の語りと観察事実・解釈の区別を保ち、対象Memoryの確定事実へCharacterの感想を混ぜない |
-| 背景Memoryの訂正・忘却／読取可能な別target | 用途に許可された管理操作と書込targetを守り、対象Memoryの訂正はappend＋supersedesで扱う。元記録と根拠を確認し、読取許可を別targetへの書込許可にしない |
-| 背景Affect訂正／通常turnの訂正／reset | 背景correctは有効な用途bindingの管理権限に従い、明示指示を偽装しない。通常turnの明示指示要件と背景reset禁止を保ち、自然な感情変化を過去eventの誤りにしない |
-| 背景からのSession Graph／Glossary参照 | 元会話の所属Crewの共有Graph・許可primary checkoutのGlossaryを読取だけで利用する。通常作業の記録・登録指示を背景writeへ広げず、別Providerでも実sourceの参照範囲を保つ |
-| 背景の共通prompt／AuxiliaryのSessionFolder／参照材料 | 設定に従いCharacter・Affectを受け取り、重複注入しない。親Mainのfolder共有と実ownerを区別し、file認可を広げず、材料中の過去の指示を今回の依頼として実行しない |
-| 保存済みの背景登録指示がある | ルール更新だけで指示が変わったと扱わず、`Use Preset`による切替と既存カスタム指示の保持を区別する |
-
-配布元の文言・参照整合、live配置、新規sessionでの読取と応答への利用、明示依頼による書込、背景生成、Affectの反映は分けて確認・報告する。文言の強化だけで行動改善を実証したとは扱わず、未確認の範囲を明記する。結果はSessionFolderのreview記録等へ残し、repositoryの契約・進捗・検証結果をMemoryへ写さない。
 
 ## MCP接続
 
@@ -182,31 +153,17 @@ foreach ($entry in $mcpEntries.PSObject.Properties) {
 
 Session GraphはWithMateから現在のSessionへ提供されるMCPを使用する。操作名・引数・schema・bindingはそのSessionのruntime提供を正本とし、user scopeやproject設定へ接続値を固定しない。Skillの静的確認とClaude providerでの実接続・読書きの確認は分け、未実施のruntime確認を成功扱いしない。
 
-WithMate 6.3.29はClaude provider Sessionへ、共有localhost HTTP MCPの`withmate-memory`と`withmate-glossary`を自動供給する。endpointはそれぞれ`/mcp/memory`と`/mcp/glossary`である。接続URLと当turnの短命tokenは一時設定で渡されるため、user scopeやproject設定へ登録せず、設定例・実登録・ログへ保存しない。
+WithMateはClaude provider Sessionへ、共有localhost HTTP MCPのGlossary・Session Graph・Session接続を自動供給する。接続URLと当turnの短命tokenは一時設定で渡されるため、user scopeやproject設定へ登録せず、設定例・実登録・ログへ保存しない。
 
-WithMateから新しいClaude Sessionを開始し、そのSessionへ公開された`tools/list`と必要なread-only操作で接続を確認する。通常のCLIによる永続登録の一覧だけで、一時設定の接続成否を判定しない。接続確認だけを目的にMemory・Affect・Glossaryを書き込まない。手動登録もある場合は同じ機能の重複と利用経路を確認し、第三者MCPを一括変更しない。
+WithMateから新しいClaude Sessionを開始し、そのSessionへ公開された`tools/list`と必要なread-only操作で接続を確認する。通常のCLIによる永続登録の一覧だけで、一時設定の接続成否を判定しない。接続確認だけを目的にGlossaryやGraphを書き込まない。手動登録もある場合は同じ機能の重複と利用経路を確認し、第三者MCPを一括変更しない。
 
 未接続やbindingエラーでは起動元WithMateとSessionの対応を確認し、URL・tokenを推測したり別Sessionの値を転用したりしない。利用条件と再試行・CLI fallbackの可否は、現在のMCP instructions・tool説明・schema、[WithMate利用guide](docs/guides/withmate.md)とruntime-managed Skillに従う。登録・接続・Session-bound toolの実動作確認は分ける。接続設定はtoolの包括許可や外部writeの承認を付与しない。
 
-### 背景登録と添付の診断
-
-背景処理の実行結果と操作診断はWithMateの`userData/logs/background-failures.jsonl`で、Agentの終了状態と個々のtool操作の成否・保存効果を分けて読む。`completed`は全件保存成功の証明ではなく、操作拒否の併存だけで実行全体を`failed`へ読み替えない。全操作拒否も正常な登録不要とは扱わない。
-
-このログには正常終了した実行の操作拒否・失敗・結果不明も記録される。ログの存在だけから実行失敗を推定せず、先行する保存を巻き戻したり、実行全体を無条件に再送したりしない。
-
-MCP／CLIが`WITHMATE_MEMORY_INVALID_INPUT`を返した場合は、`error.details.tool`と`error.details.issues`のfield位置・制約・代替条件を読んで入力を修正し、呼び直す。unionの候補内の条件はすべて必要だが、候補間は代替関係であり、全候補を同時に満たす必要はない。公開schemaでの拒否は当該呼出しが保存前に拒否されたことを示し、`effect: none`を他の操作の保存まで未実施という意味にしない。
-
-この入力拒否を認可・通信・保存の障害やCLI fallbackの許可へ読み替えず、変更なしの要求を繰り返さない。Memory本文・会話本文・prompt・tool引数や応答本文・入力値全体・secret・認証情報を追加dumpしない。
-
-背景thread・前回失敗・待機状態はアプリ再起動をまたいで復元されないが、保存済みMemory・Affectは保持される。threadの継続や失敗情報の有無から保存状態を推測しない。
-
-添付の取込元・復元先とローカルwriteの可否は当該呼出しの許可範囲で確認する。復元の拒否をMCP全体の未接続と同一視したり、権限を緩めて迂回したりしない。適用境界は[WithMate利用guide](docs/guides/withmate.md)に従う。
-
 ### 手動STDIOによる開発・診断
 
-手動clientの開発・診断では、WithMateが配置する`withmate-memory mcp-server`または`withmate-glossary mcp-server`をSTDIO server commandとして使用できる。Windowsのcommand shimは`PATH`から`cmd.exe /d /c`経由で起動し、端末のinstall pathは固定しない。この経路を通常の自動接続と重複登録したり、HTTP未接続時の自動的な迂回路にしたりしない。
+手動clientの開発・診断では、WithMateが配置する`withmate-glossary mcp-server`をSTDIO server commandとして使用できる。Windowsのcommand shimは`PATH`から`cmd.exe /d /c`経由で起動し、端末のinstall pathは固定しない。この経路を通常の自動接続と重複登録したり、HTTP未接続時の自動的な迂回路にしたりしない。
 
-当該provider Sessionの`WITHMATE_AGENT_RUNTIME_BINDING_REFERENCE`、`WITHMATE_AGENT_RUNTIME_BINDING_REQUIRED`、`WITHMATE_AGENT_RUNTIME_TURN_CAPABILITY`、`WITHMATE_MEMORY_RUNTIME_APPLICATION_INSTANCE_ID`、`WITHMATE_MEMORY_RUNTIME_GENERATION_ID`を診断用processへ渡す。bindingの実値は永続化・複製せず、欠落値を推測で補わない。手動STDIO設定は通常導入用の`mcp.example.json`へ追加しない。
+当該provider Sessionの`WITHMATE_AGENT_RUNTIME_BINDING_REFERENCE`、`WITHMATE_AGENT_RUNTIME_BINDING_REQUIRED`、`WITHMATE_AGENT_RUNTIME_TURN_CAPABILITY`、`WITHMATE_AGENT_RUNTIME_APPLICATION_INSTANCE_ID`、`WITHMATE_AGENT_RUNTIME_GENERATION_ID`を診断用processへ渡す。bindingの実値は永続化・複製せず、欠落値を推測で補わない。手動STDIO設定は通常導入用の`mcp.example.json`へ追加しない。
 
 ## modelと担当
 
@@ -235,7 +192,7 @@ roleの`model`と`effort`は[Claudeのfrontmatter](https://code.claude.com/docs/
 
 ## WithMate V7の協同と端末方針
 
-Role・入力来歴に応じた親子の依頼、背景確認、Coordination、明示報告、Turn終了／再開は[Session間の協同](docs/guides/withmate-collaboration.md)、nativeとの使い分けとworktree配置は[委譲と作業領域](docs/architecture/subagent-workspace.md)を参照する。通常会話・Character表現・Memory／Affectとfolderの使い分けは[WithMate利用guide](docs/guides/withmate.md)が担う。
+Role・入力来歴に応じた親子の依頼、背景確認、Coordination、明示報告、Turn終了／再開は[Session間の協同](docs/guides/withmate-collaboration.md)、nativeとの使い分けとworktree配置は[委譲と作業領域](docs/architecture/subagent-workspace.md)を参照する。通常会話・Character表現とfolderの使い分けは[WithMate利用guide](docs/guides/withmate.md)が担う。
 
 端末の選定基準・契約経路とWorktree配置はWithMateの保存方針を参照する。取得のタイミング、宛先の実カタログ・必要時のquotaとの照合、配置結果の使い分けは[協同ガイド](docs/guides/withmate-collaboration.md#実行条件の選定)に集約する。通常の親Sessionが読む同ガイドは、直接checkoutと手動コピーのどちらでも[配置手順](#導入と更新)の配布対象に含まれる。
 
