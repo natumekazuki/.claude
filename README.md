@@ -178,7 +178,7 @@ WithMateから新しいClaude Sessionを開始し、そのSessionへ公開され
 | 高度判断担当／`general_opus` | `claude-opus-5-5` | medium |
 | 汎用`read-only`担当の既定 | `claude-sonnet-5-5` | medium |
 
-effortは開始値であり、製品間の性能等価や最適値を実証したものではない。[Claude公式のモデル選択案内](https://platform.claude.com/docs/en/about-claude/models/choosing-a-model)は、通常のcoding・agent作業におけるSonnetの速度と能力、高度なagentic codingにおけるOpus、低遅延・大量処理におけるHaikuの用途を示している。実際の品質・実行時間・消費枠は対象taskと利用契約に依存する。
+effortは開始値であり、製品間の性能等価や最適値を実証したものではない。実際の品質・実行時間・消費枠は対象taskと利用契約に依存する。
 
 `settings.example.json`の`model`とmodel別`modelSettings`を端末localの`settings.json`へ必要な範囲で反映する。手動で上位親を起動する場合は次を使う。CLI指定はそのsessionだけに適用し、通常親の既定を変更しない。
 
