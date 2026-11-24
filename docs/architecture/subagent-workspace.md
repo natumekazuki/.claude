@@ -1,79 +1,37 @@
 # 委譲と作業領域
 
-## WithMateの通常子Sessionとnativeサブエージェント
-
-全体統括は対話・統括の時間を確保するため、実作業をWithMateの通常子Worker／個別統括へ委譲する。直接行う最小限の判断・参照等との境界は[協同guide](../guides/withmate-collaboration.md#担当の選択と依頼)に従い、短い独立確認を理由としたnative子への実作業の直接委譲は行わない。Worker内の細かな分担・独立reviewには製品nativeのサブエージェントを使える。その他のRoleの使い分けでは、独立した会話・Character・実行設定・担当状態として継続して追う仕事に通常子、担当内で成果を回収・統合する分業にnativeを基本とし、調査／実装／review、規模、長さ、Modelだけで固定しない。同じ仕事を両方へ重複委譲しない。
-
-WithMateの子は別の参加者であり、[Session間の協同](../guides/withmate-collaboration.md)でRole・背景確認・Coordination・明示報告・Turn終了と再開を扱う。同じ成果の続き・修正・受入対応には継続可能な既存Sessionを使い、新規との判断も同guideに従う。native子は別のWithMate参加者とはみなさず、製品nativeの通知・返却・待機契約を使う。
-
-通常のMain Sessionは役割を問わず、全体統括・個別統括・Workerを含めて1 Session・1専有Workspaceとし、同じ作業directoryを複数のSessionへ重複割当しない。他SessionのWorkspaceを追加directory等で直接編集して分離を迂回せず、許可されたread-only参照と共同編集は区別する。Auxiliaryとnativeサブエージェントはこの必須ルールの対象外であり、既存の編集所有・衝突回避・権限はそのまま保つ。
-
-どちらも既存の委譲許可、必須専門審査、操作権限とruntime制限に従う。以下のnative用model・tool制限をWithMate全Providerのallowlistへ広げず、WithMateのカタログをnativeの許可拡大にも使わない。WithMate通常子の[実行条件の選定](../guides/withmate-collaboration.md#実行条件の選定)は協同guideに従う。
-
-## nativeサブエージェント
-
-委譲前に読む。汎用`general_sonnet`、`general_sonnet_execution`、`general_opus`と`read-only`担当へ、対象、必要な結果、権限を依頼ごとに渡す。調査だけの依頼では編集しない。履歴継承に頼らず、review依頼には主要動作、後続の依存、[開発・review・統合](../guides/development.md)の統合基準と、非ブロッカーを全件修正待ちにしないことを含める。必要な参照先は参照元文書から解決した実pathで渡し、全規約を無条件に複製しない。
-
-委譲時は現在のSessionFolderと、作業に必要な共有情報・参照先を渡す。子がtool制限等でSession Graph・Glossaryを直接利用できない場合は、親が許可範囲内で必要な取得・記録を担い、子へ必要な結果を渡す。子のtool権限とSession bindingの制約を守る。
-
-共有する設計判断に関わる依頼では、必要な要求・前提、採用済みの判断と適用状況、未合意事項、[設計判断・文書化](../guides/design-decisions.md)の参照先も渡す。同じ前提の判断を再利用し、現行実装や草案を採用根拠に置き換えない。不足の調査・推奨案・草案作成までを依頼できるが、親からの委譲を未合意方針の採用や操作権限の拡大と解釈しない。
-
-## modelと担当の選択
-
-native子の使用modelは`claude-sonnet-5-5`と`claude-opus-5-5`。設定値と採用理由は[README](../../README.md#modelと担当)に記載する。
-
-- Sonnetを通常の親と一般childの既定にする。`general_sonnet`は調査、設計、実装、debug、reviewを担当する。
-- `general_sonnet_execution`は、進め方・手順・期待結果がほぼ決まっている抽出、定型調査、設計済みの実装、判断済みの基準に沿った照合等を担当する。範囲が小さいことだけで選ばず、未解決の設計・安全性の判断を押し込まない。
-- `general_opus`は、高度な判断が要求される設計の選択、契約間の矛盾の解消、難しい反例の検討等を、非Opus親から必要な問題に絞って渡す場合に使う。Opus親はその判断を自ら担当し、Opus親からOpus子への委譲は禁止する。
-
-上位modelの選択に下位modelの失敗を要求せず、作業に必要な判断で直接選ぶ。形式的な試行、念のための多重reviewは追加しない。専門審査の手順と必須条件は該当Skillに従う。modelの変更を審査免除や権限拡大に使わない。
-
-read-only依頼にも同じ判断基準を使い、tool制限を持つ`read-only`担当を選ぶ。既定はSonnet/mediumで、手順確定の作業は必要に応じてSonnet/high、高度判断は非Opus親からOpus/mediumをper-callで指定する。汎用担当へread-onlyと書くだけで、このtool制限を代替しない。
-
-## runtimeと権限
-
-ユーザーの明示指定は尊重し、指定がなければ上記の担当分けと開始値を使う。指定modelがruntimeで利用できない場合は許可された構成の親で可能な範囲を続ける。親の自己評価で審査済みにしない。
-
-role名だけで実modelを推測せず、起動するsessionのmodel IDとeffortを確認する。Claudeではper-callのmodelがfrontmatterより優先され、`CLAUDE_CODE_EFFORT_LEVEL`は担当別effortより優先される。`CLAUDE_CODE_SUBAGENT_MODEL_FORCE`で全担当を同じmodelへ固定したり、一律のeffort環境変数で担当の開始値を潰したりしない。project・managedの同名定義やhost設定が優先される場合は、その実体と実効値を確認する。
-
-親は起動前に自分のmodelと委譲先を確認し、上記の担当分けに従って子を選ぶ。
-
-Agent起動は現在のtool schemaに従う。対象・必要な文脈・完了条件を起動時の依頼へ含め、親の会話や既読fileが子へ渡ることを前提にしない。設定例は`CLAUDE_CODE_FORK_SUBAGENT=0`で履歴forkを無効にし、`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`で子から孫への委譲を無効にする。必要な資料だけを渡す通常の独立した委譲を使い、設定例を配置しただけで実効性を確認済みとしない。
-
-read-onlyの依頼は文面だけでなく、利用するagentのtool制限と実効権限を確認する。permissionModeだけを読み取り専用の保証にしない。shell、編集・write、外部writeを行えるMCP等を一律に引き継いだまま、制限済みと報告しない。必要なread-only構成が利用できない場合は、その委譲に依存する完了判断を止め、権限を無断で追加・迂回しない。
-
-本repositoryの汎用read-only担当は[`agents/read-only.md`](../../agents/read-only.md)である。toolはRead・Glob・Grepだけに限定する。review観点は依頼ごとに渡し、test専用roleにはしない。runtimeでこの担当と有効なtool構成を確認し、同名のproject・managed定義が優先される場合はその実体を確認する。
-
-待機・再開・結果取得はClaudeの現在のAgent契約に従い、通知と完了見込みを使う。短い間隔のポーリングを避ける。
-
-## 統合と成果返却
-
-test価値reviewの抽出、read-onlyサブエージェントへの委譲、review観点、完了判断は、runtimeが提供するreview-test-value Skillを正本とする。専用roleや独自のworker、scheduler、artifact storeは使わない。必須Skillやread-only担当が利用できない場合も審査を免除しない。
-
-同じworking treeで作業する場合は編集範囲と生成物の競合を避け、ユーザーと他の担当の変更を保護する。子は結果、根拠、実行した確認、未解決事項を親へ返し、親が統合と最終確認を行う。通常の成果返却に専用文書は不要である。
-
-親は上記の開発・統合基準で指摘の採否と対応時期を判断し、今回の仕上げと後追いを分ける。非ブロッカーを一律に別タスク化せず、後追いの着手・完了を現在の変更の完了・統合条件にしない。
+委譲先は責任の持たせ方で選ぶ。独立した会話・Character・担当状態として成果を追うならWithMateの通常子、Workerが担当内で回収する分業・独立reviewなら許可されたnative子を使う。同じ仕事を二重に渡さない。統括の責任・通常子の選定と配送は[Session間の協同](../guides/withmate-collaboration.md)に従う。nativeは別のWithMate参加者ではなく、製品の通知・返却経路を使う。
 
 ## 子の作業領域と親の準備
 
-子を起動する直接の親が、起動前にその子の専用作業領域を作成・確認して絶対pathを渡す。全体統括は自身が起動する個別統括とWorkerの分を、個別統括は自身のWorkerの分を準備する。準備に失敗したら子の起動を保留し、親のWorkspaceを代用しない。子を親のWorkspaceで起動して自己準備させず、領域の準備・回収だけを目的にWorkerを起動しない。Worktree準備だけを直接依頼された場合も、受けた統括が自身で実施する。作業領域の管理は統括の直接操作に含めるが、短い実作業全般を統括へ戻す例外にはしない。
+WithMateの通常Mainは統括・Workerともに1 Sessionにつき1専有Workspaceを使う。起動する直接親が起動前に実体を準備し、その絶対pathを渡す。準備だけのWorkerを立てず、失敗時は子の起動を保留する。他SessionのWorkspaceを共用したり、追加directory経由で直接編集したりしない。許可されたread-only参照は共同編集と区別する。
 
-Git管理下の通常子には専用Worktreeを割り当てる。同じrepositoryでの並行作業は別のbranchで行う。Git管理外の作業は[非Gitの作業領域](#非gitの作業領域)に従う。配置先の取得と結果の使い分けは、協同guideの[Worktreeの配置先](../guides/withmate-collaboration.md#worktreeの配置先)を正本とする。
+Git管理下の通常子にはreviewでも専用Worktreeを用い、並行作業は別branchとする。特定commitへの固定は再現・隔離が必要な時に選ぶ。Auxiliaryとnative子には一律の専用Workspaceを課さず、編集所有・衝突・権限と必要な隔離から決める。
 
 ## Git worktreeの配置
 
-commit固定は具体的な隔離・再現の必要に応じて使い、全reviewへ一律には要求しない。Git管理下の通常子Sessionには、reviewを含めて専用Worktreeを割り当てる。Auxiliaryとnativeサブエージェントでは、具体的な隔離・再現の必要に応じてWorktreeを使う。非Gitの場合は[非Gitの作業領域](#非gitの作業領域)に従う。ここでは独自のroot・分類・layoutやpath組み立てを定義しない。
-
-親が、登録先の実体とbranch、分岐元のbranch・commit、作成先の占有、未コミット変更を確認し、必要なGit操作を行う。返された既存Worktreeは他Sessionの占有を確認してから割り当て、無条件に共有しない。forceで同じbranchを複数checkoutしない。配置候補の取得を作成済み・利用可能の証拠とせず、準備した実体の絶対pathを子のWorkspaceへ渡す。既存worktreeの移設・削除や他者の作業領域の上書きは、この準備の許可に含めない。
-
-## 作業領域の再利用と回収
-
-子の作業領域は同じSession・同じ担当作業で再利用し、Turn単位で作り直さない。待機・中断・修正待ちの間は保持し、idleや経過日数だけで削除しない。親は子の成果を受入し、必要な統合の後に回収する。回収前に、実行中や予約済みの作業と他Sessionの利用がないこと、成果と資料の保全、未コミット・未追跡・ignoredファイルに残すべきデータがないことを確認する。Worktreeとbranchは別々に回収できる。未統合のcommitや採否未決の成果を無断で破棄せず、中止・不採用の場合は保存か破棄かを決めてから扱う。通常の削除が拒否されたら、forceへの自動的な切り替えはしない。
-
-親が回収できるのは、この運用で新規に作った子用のWorktree、ローカルtask branch、非Git専用領域に限る。無関係な既存領域とremote・default・protected branchは対象外とする。回収の管理台帳は新設せず、再開時は保存されたbranch・commitと保全した成果から親が作業領域を再準備する。
-
-子Sessionへの送信が割当Workspaceの不在を理由に拒否された場合、送信元Sessionが復旧を担う。Git管理下では保存したbranch・commitから元の割当pathへWorktreeを再準備し、非Gitでは保全した入力から専用領域を再作成する。いずれも利用可能な実体を確認してから改めて送信する。拒否時に未配送（`effect: none`）が確認できた場合に限って再送し、受付結果が不明なら同じrequestIdと宛先で状態を確認して重複送信を避ける。送信元が安全に復旧できない場合は再送を保留して報告し、子Sessionに復旧を委ねない。
+1. WithMateでは対象repository・branchを `session.resolve_worktree` で解決する。利用可能な既存登録を優先し、返された配置先を使う。未設定なら配置に必要な不足だけ確認する。今回限りの指定は新規候補にだけ適用し、保存方針・既存登録を変更しない。SessionFolder・Crew Folderからpathを組み立てない。
+2. 配置候補は実体ではない。直接親が分岐元のbranch・commit、実体とbranch、他Sessionの占有、未コミット変更を確認して必要なGit操作を行う。同じbranchをforceで複数checkoutしない。既存領域の移設・削除・上書きは準備の範囲外。追加writeが要るなら専用の狭い範囲で通常の承認を求め、拒否を権限拡大で迂回しない。
+3. 子へ渡すのは利用可能と確かめたWorkspace。WithMateはGitの作成・統合を代行しない。実体・branch・占有が変わった事情がなければ確認結果を再利用できる。
 
 ## 非Gitの作業領域
 
-Git管理外の作業では、親が専用directoryへ今回必要な入力だけをコピーし、子は原本を直接編集しない。親は原本の現在状態と対象を確認して、必要な成果だけを反映する。directory全体の上書き戻しはしない。継続した開発や並行統合が見込まれる場合はGitでの管理を提案し、合意がない限りgit initや全ファイルのcommitをしない。DBや外部サービス等、directoryの分離だけでは隔離できない対象は、準備の前に方式を相談する。非Git専用領域の回収も、この運用で新規に作った専用領域だけを対象に、[作業領域の再利用と回収](#作業領域の再利用と回収)と同じ条件で行う。
+親が専用directoryに必要な入力だけをコピーし、子は原本を直接編集しない。親は受入時の原本と照合し、必要な成果だけを戻す。継続的な並行統合にGitが必要なら提案し、合意なしの `git init` や一括commitはしない。DBや外部サービスなどdirectory分離では保護できない対象は準備前に方式を相談する。
+
+## 作業領域の再利用と回収
+
+同じSession・同じ担当の続きには元の領域を使う。idle・経過日数を理由に待機中・中断中・修正待ちの領域を回収しない。親が回収できるのは、この運用で**新規に作った**子用Worktree、ローカルtask branch、非Git専用領域だけ。既存領域、remote・default・protected branchを含めない。
+
+回収は受入・必要な統合の後に行う。実行中・予約済みの作業や他Sessionの利用がなく、成果・参照資料が保全されていることを確認する。未コミット・未追跡・ignoredのデータも対象とし、未統合commitや採否未決の成果を捨てない。中止・不採用なら保存か破棄かを先に決める。Worktreeとbranchは別々に扱い、通常削除の拒否からforceへ切り替えない。
+
+割当Workspaceの不在で送信が拒否されたら、送信元が元の割当pathに復旧する。Gitなら保存したbranch・commit、非Gitなら保全した入力から再準備する。実体を確認できなければ再送を保留し、自分で復旧できない子へ任せない。再送可否は[受付の証拠](../guides/withmate-collaboration.md#通常送信と実行中の補足)で判断する。専用の回収台帳は作らない。
+
+## nativeサブエージェント
+
+Claude Codeの `Agent` には目的・担当範囲・成果・操作権限と、実際に読める対象path、SessionFolder、必要な採用判断・維持契約を渡す。親の履歴や別Sessionのbindingは仮定しない。共有判断には[設計guide](../guides/design-decisions.md)、reviewには[統合基準](../guides/development.md#統合優先修正分離)を添える。子が取得できないGraph・Glossaryの情報は親が権限内で取得・記録する。
+
+担当は [`agents/`](../../agents/) の定義から、必要な判断と結果で選ぶ。通常の調査・設計・実装は `general_sonnet`、手順と期待結果が定まった作業は `general_sonnet_execution`。難しい反例や契約間の矛盾は非Opus親から問題を絞って `general_opus` へ渡せる。Opus親は自分で判断し、Opus子へ委譲しない。下位modelの試行を条件にはしない。
+
+調査・専門reviewなど読み取りだけを許す依頼は [`read-only`](../../agents/read-only.md) を使う。起動時に実際のtoolがRead・Glob・Grepだけであることを確認する。permissionModeや汎用担当への文面だけでは、shell・編集・MCP writeを制限できない。同名のproject・managed定義が優先される場合も実体を確かめる。read-only担当も必要な判断に合わせてSonnet/medium、手順確定はSonnet/high、高度判断は非Opus親からOpus/mediumを選べる。必要な構成が使えなければ、その委譲に依存する判定を保留する。
+
+起動には現在のtool schemaを使い、実model・effortと権限を確かめる。配布設定の開始値と優先順位は[Claudeの設定案内](../../README.md#modelと担当)を参照する。通知hookは操作やmodelを制限しない。Agentの完了通知で受け取り、必要な根拠と未解決だけを親へ返す。親は共有の変更を保護し、統合・最終確認を行う。変更testの独立審査はruntimeの `review-test-value` Skillに従い、親や汎用担当の自己評価で代替しない。
