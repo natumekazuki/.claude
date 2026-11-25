@@ -53,9 +53,9 @@ Claude nativeの開始値は[設定例](settings.example.json)の親Sonnet 5.5/m
 
 ## 配布物の確認
 
-変更した判断が必要な場面と、適用してはいけない対照を選ぶ。例えば、補助の空枠と失敗からの回復、旧表示を消した事実と権限による非公開では、残すべきものが違う。出力の変化を評価するなら、履歴・model・tool等の条件を揃えた架空の依頼で比較する。配布元にあること、端末への配置、Sessionでの読込・発見、実作業での判断・配送を別の証拠として扱う。
+変更の影響に必要な確認を選び、既存の必須CIがあれば通す。規約の更新だけを理由に、対照例や実行条件の一致、生成比較を受入に求めない。比較自体が依頼なら、問いに応じて揃える条件を選び、揃わない条件が結論に与える影響を示す。
 
-- 配布するMarkdownの参照、Skillとagentのfrontmatter、設定JSONと対応するhookの入出力を確認する。実設定や会話本文を検証用に出力・転送しない。
+- 変更に応じて、Markdownの参照、Skillとagentのfrontmatter、設定JSONと対応するhookの入出力を確認する。実設定や会話本文を検証用に出力・転送しない。
 - 変更test抽出器の既存回帰検査は `python -X utf8 -m unittest discover -s skills/review-test-value/scripts -p "test_extract_test_values*.py"`。抽出にはPython 3.11以降とGit、TypeScriptにはNode.jsと `npm ci --prefix skills/review-test-value/scripts/adapters/typescript`、C#には.NET 8の実行環境と対応SDKが必要。抽出器のテストと、実際の変更test全件の独立審査は別である。
 - WithMateの通常子の選定、実呼出元への相談、保存後配送・受入を確認する場合は、そのSessionが提供するMCPを使う。静的な規約や設定の一致だけを配送成功の証拠にしない。
 
