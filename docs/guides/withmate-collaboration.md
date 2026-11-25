@@ -25,7 +25,7 @@ Reply Toは**どの発言への返信か**を指す。実送信元、次の宛�
 
 ## 実行条件の選定
 
-作成・再選定時には `session.get_selection_policy` の保存方針と、宛先Provider・Workspaceの `session.get_catalog` を照合する。成果・不確実性・検証方法からModel・Depthと契約経路を選ぶ。同等候補は利用枠と手戻りも比較する。Roleや短さでDepthを固定せず、同名Depthを異なるmodel間の能力・消費の等価値にしない。既存SessionのProviderは固定。配信経路とProviderを区別し、宛先catalogの完全model IDを使う。
+作成・再選定時には `session.get_selection_policy` の保存方針と、宛先Provider・Workspaceの `session.get_catalog` を照合する。成果・不確実性・検証方法からModel・Depthと契約経路を選ぶ。同等候補は利用枠と手戻りも比較する。Roleや短さでDepthを固定せず、同名Depthを異なるmodel間の能力・消費の等価値にしない。既存SessionのProviderは固定。OpenCodeではWithMateのProviderと配信経路を区別し、宛先catalogの完全model IDを使う。
 
 利用枠が判断を変える時だけ `session.get_provider_quota` の経路・取得状態・最終成功日時を確認する。方針の未設定と取得失敗は別であり、古い値は利用可能・無料の根拠にならない。未合意のProvider・課金経路へ切り替えない。一度の指定で選定・配置の保存方針を変更せず、登録・更新・解除は恒久変更の指示がある時に限る。
 
@@ -42,7 +42,7 @@ Reply Toは**どの発言への返信か**を指す。実送信元、次の宛�
 | 応答喪失など受付結果が不明 | 再送せず、元の `requestId` と正確な宛先で `session.get_receipt` を照会する |
 | 受付済み | 同じ依頼を重ねない。受入は作業結果で判断する |
 
-Claudeの通常子への追加依頼は通常送信で次のTurnへ届ける。別の宛先で現在のSession MCPがSteerに対応する場合、直属親が実行中の同じTurnを訂正・補足する用途に限る。宛先の `session.get` が示すWithMateの `currentTurn.turnId` に固定し、ProviderのTurn IDを使わない。設定・権限は変更しない。結果不明ならそのTurnの保存入力を確認し、別Turnや通常送信へ流さない。
+Claudeの通常子への追加依頼は通常送信で次のTurnへ届ける。実行中の同じTurnの訂正・補足に限り、直属親から通常のCodex子へ `session.steer` を使う。宛先の `session.get` が示すWithMateの `currentTurn.turnId` へ固定し、ProviderのTurn IDを使わない。設定・権限は変わらない。結果不明ならそのTurnの保存入力を確認し、別Turnや通常送信へ流さない。
 
 ## Coordinationによる相談と再開
 
@@ -50,7 +50,7 @@ Claudeの通常子への追加依頼は通常送信で次のTurnへ届ける。�
 
 たとえば全体統括A→個別統括B→Worker Cで、Cの相談がBを起動した時、Bの実呼出元はCであってAではない。BがAの判断を必要とするなら、元の相談IDと論点を添えて直属親Aへ `enqueue` の `immediate` で送り、AはBへ通常送信で返す。Bがその判断でCの元の相談に回答する。別相談の宛先をAに強制したり、Agent間の照会をユーザー向けescalateに置き換えたりしない。
 
-ユーザー回答が必要な新規の問いはCoordinationのユーザー回答待ちとして起票する。利用不能または未実行と確定した時だけ、Claudeで提供されていれば `AskUserQuestion`、利用できなければ会話で問う。結果不明なら元の操作を確認する。質問をsandbox等の操作承認の代わりにはしない。
+ユーザー回答が必要な新規の問いはCoordinationのユーザー回答待ちとして起票する。利用不能または未実行と確定した時だけ、許されたClaudeの `AskUserQuestion`、利用できなければ会話で問う。結果不明なら元の操作を確認する。質問をsandbox等の操作承認の代わりにはしない。
 
 起票元は回答と元の問い・依頼を相談IDで照合して保留箇所から再開する。受領・実際の使用・解消を分け、使用時の操作と解消後のresolveを行う。通常会話で答えが届いた時も、元の相談に照合する。他Sessionが受けた答えは参照を起票元へ届け、Coordination自体で回答・配送されたことにしない。自己解決なら起票元がwithdrawできる。取り下げは有効な回答・受付済み配送・Turnを取り消さない。
 

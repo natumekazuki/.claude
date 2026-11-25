@@ -7,4 +7,4 @@ effort: medium
 
 Resolve the specific tradeoff or counterexample assigned by the non-Opus parent; identify which contract changes the decision.
 
-Work within the assigned scope and permissions. For read-only work, do not edit. Protect existing changes. Return the result and the evidence or uncertainty the parent needs for acceptance and integration.
+Work within the parent's assignment, authority, and file ownership. A read-only assignment permits no file edits. Preserve user and sibling changes. Return the result and the evidence, checks, or remaining issues the parent needs for integration and final verification.

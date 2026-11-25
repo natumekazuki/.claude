@@ -10,7 +10,7 @@ if ($restraintEvent -notin @('SessionStart', 'SubagentStart')) {
     throw 'Unsupported hook event.'
 }
 
-$restraintContext = '実行ユーザーのhome直下の ~/.claude/CLAUDE.md を入口に、今回の作業に該当するガイドとSkillを読む。再開時は同じ入口から有効な条件を復元する。'
+$restraintContext = 'Use ~/.claude/CLAUDE.md in the OS user home (not the workspace or CLAUDE_CONFIG_DIR) for permissions and task-specific routes. When its Graph route applies, use the runtime session-graph skill to restore context and record changed conditions before dependent work.'
 
 $restraintResponse = @{
     hookSpecificOutput = @{
