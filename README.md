@@ -10,7 +10,7 @@
 | 専門手順 | [個人Skill](skills/)とその配下のscript・reference・asset。用語集はWithMateが別途提供する |
 | 委譲先とWorkspace | [Claude nativeと作業領域](docs/architecture/subagent-workspace.md)、[WithMate通常Sessionの協同](docs/guides/withmate-collaboration.md) |
 | ホストの開始値 | [設定例](settings.example.json)、[agent定義](agents/)、[起動通知](hooks/implementation-restraint.ps1)、[個人MCPの登録例](mcp.example.json) |
-| 利用者向け変更 | [v4.1.0の変更と移行](docs/releases/v4.1.0.md)・[版別リリースノート一覧](docs/releases/) |
+| 利用者向け変更 | [v4.1.1の変更と移行](docs/releases/v4.1.1.md)・[版別リリースノート一覧](docs/releases/) |
 
 ## 導入と更新
 
