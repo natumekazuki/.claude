@@ -23,7 +23,7 @@
 | repository固有の用語・alias・境界を確認・訂正する | runtime-managed `withmate-glossary` Skill。根拠・適用先はsourceとaccepted contractで確認し、独自storeやforkを作らない |
 | 実装・検証の証拠を渡す | 成果物はrepositoryまたは用途別のfolder。review結果・指摘別対応は[開発guide](development.md)。他の場所には必要な参照を渡す |
 
-用語集には通常作業のread・search・validate・create・create-batch・updateの継続許可がある。updateはsourceや採用済み契約との不一致、古い定義、canonical term・aliasの誤りの訂正に限る。deleteは対象entryとrevisionを確認し、**entryごとの明示承認**を得る。いずれも現在のSkill・MCPのtarget、Settings、schemaの範囲内で行う。接続時・障害時は[READMEのMCP接続](../../README.md#mcp接続)を使う。
+用語集には通常作業のread・search・validate・create・create-batch・updateの継続許可がある。updateはsourceや採用済み契約との不一致、古い定義、canonical term・aliasの誤りの訂正に限る。deleteは対象entryとrevisionを確認し、**entryごとの明示承認**を得る。いずれも現在のSkill・MCPのtarget、Settings、schemaの範囲内で行う。接続時・障害時は[Glossary runbook](../runbooks/withmate-repository-glossary.md)を使う。
 
 ## SessionFolderとCrew Folder
 
