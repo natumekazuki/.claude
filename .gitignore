@@ -25,3 +25,6 @@ __pycache__/
 
 # 利用者が保持する非配布の端末固有資料
 /withmate.local.md
+
+# Claudeが保存する端末のshell環境
+/shell-snapshots/
