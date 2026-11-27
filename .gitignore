@@ -1,30 +1,68 @@
-# 認証情報と端末localの実設定
-/.credentials.json
-/settings.json
-/settings.local.json
+# この設定ホームは配布対象を明示する。未登録のルートパスは無視する。
+/*
 
-# 実行時データとインストール状態
-/.last-cleanup
-/.last-update-result.json
-/history.jsonl
-/backups/
-/cache/
-/downloads/
-/plugins/
-/projects/
-/session-env/
-/sessions/
+# 配布元の入口と、実設定ではない公開例
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/CLAUDE.md
+!/mcp.example.json
+!/settings.example.json
 
-# 個人SkillのPython実行生成物
+# 配布専用の文書・テンプレート・開発メタデータ
+!/docs/
+!/templates/
+!/.github/
+!/.githooks/
+
+# 利用者の設定と混在し得る領域は、配布するファイル名だけ許可する
+!/agents/
+/agents/*
+!/agents/general_opus.md
+!/agents/general_sonnet.md
+!/agents/general_sonnet_execution.md
+!/agents/read-only.md
+!/hooks/
+/hooks/*
+!/hooks/implementation-restraint.ps1
+!/scripts/
+/scripts/*
+!/scripts/check-repo.py
+
+# Skillは配布パッケージ単位で許可する。未登録のSkillやpluginは公開しない
+!/skills/
+/skills/*
+!/skills/design-ui-information/
+!/skills/japanese-tech-writing-review/
+!/skills/natural-japanese/
+!/skills/relaygraph/
+!/skills/session-graph/
+
+# 許可領域内でも実設定・認証・ローカル上書き・生成物は無視する
+.DS_Store
+.env
+.env.*
+.credentials.json
+auth.json
+auth.json.lock
+auth.lock
+secrets/
+*.pem
+*.key
+*.local.*
+*.bak
+*.bak.*
+*.backup
+*.before-*
+*.tmp
+*.tmp-*
+*~
+*.log
 __pycache__/
 *.py[cod]
-
-# 外部サービスが管理するSkill
-/skills/synced/
-/skills/withmate-glossary/
-
-# 利用者が保持する非配布の端末固有資料
-/withmate.local.md
-
-# Claudeが保存する端末のshell環境
-/shell-snapshots/
+node_modules/
+bin/
+obj/
+settings.json
+history.jsonl
+shell-snapshots/
