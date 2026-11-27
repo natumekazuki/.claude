@@ -10,7 +10,7 @@
 | 専門手順・実行資産 | [配布するSkill](skills/)、[native role](agents/)、[hook登録](settings.example.json)と[スクリプト](hooks/) |
 | 親・子の設定 | [共有config例](settings.example.json)、[MCP設定例](mcp.example.json) |
 | 導入・診断、記入例 | [用途別runbook](docs/runbooks/)、[ADR・review記録の記入例](templates/)（任意） |
-| 過去の判断と公開版 | [ADR](docs/adr/)、[版別リリースノート](docs/releases/README.md) |
+| 過去の判断と公開版 | [ADR](docs/adr/)、[版別リリースノート](docs/releases/README.md)（変更に伴う影響） |
 
 ## このrepositoryの管理先とリリース境界
 
@@ -19,10 +19,16 @@
 ### 本repositoryの開発・リリース境界
 
 - `vMAJOR.MINOR.PATCH` タグが指すcommitを配布版とする。タグのないcommitやbranch上の途中状態は互換保証の対象としない。
-- 維持するのは各タグのリリースノートで明示した利用者向け契約であり、実装全体ではない。[初回の維持対象 v1.0.0](docs/releases/v1.0.0.md) から `review-test-value` のCLI、構造化result、metadata v2、対応adapter、Git差分選択を含む。詳細は[契約別の参照文書](skills/review-test-value/references/)で確認する。
-- 破壊的な契約変更はmajor、互換な変更はminorまたはpatchを上げて新しいタグへ記録する。リリースごとに [一覧](docs/releases/README.md) と `docs/releases/vMAJOR.MINOR.PATCH.md` を更新し、変更・互換性・検証結果を残す。
+- 維持するのは各タグのリリースノートで明示した利用者向け契約であり、実装全体ではない。
+- 破壊的な契約変更はmajor、互換な変更はminorまたはpatchを上げて新しいタグへ記録する。リリースごとに [一覧](docs/releases/README.md) と `docs/releases/vMAJOR.MINOR.PATCH.md` を更新し、変更内容とその互換性・移行・利用・安全上の影響を記録する。
 
-統合先は `master`。GitHub Releaseと版別ノートは同じタグで公開する。今回の変更は [v4.1.2](docs/releases/v4.1.2.md) を参照。Skill名・導入と配置の入口・Session GraphのMCP利用方針も維持対象である。MCPのschema・認可はruntimeが定める。
+統合先は `master`。GitHub Releaseと版別ノートは同じタグで公開する。公開版の変更は[版別ノート](docs/releases/README.md)を参照する。Skill名・導入と配置の入口・Session GraphのMCP利用方針も維持対象である。MCPのschema・認可はruntimeが定める。
+
+### この設定ホームでGit管理するもの
+
+新しいパスは既定で除外し、配布専用の文書・開発資産と、明示した設定例・ソースだけを許可する。Skillはパッケージごとに登録する。実設定・認証、端末専用のSkill／pluginや生成物は配布しない。Gitignoreは追跡済みファイルの変更や機密の中身までは除外しないので、stageする内容も確認する。
+
+新しい配布物を追加するときは、必要な親ディレクトリと対象だけを `.gitignore` で許可し、`git check-ignore -v --no-index -- <path>` と `git add -n -- <path>` で正しく追加できるか確かめる。除外を変更するときは、Git Bash等で `git ls-files -z | git check-ignore -z --no-index --stdin` を実行し、既存の追跡パスが出力されないことも確認する。`git add -f` で回避せず、実設定とは別の見本を配布する。
 
 ### Codex／Claude／OpenCode間の変更反映
 
@@ -75,11 +81,17 @@ Claude nativeの開始値は[設定例](settings.example.json)の親Sonnet 5.5/m
 
 ## Skillの配布
 
-このrepositoryで保守するのは、変更testの [review-test-value](skills/review-test-value/)、UIの [design-ui-information](skills/design-ui-information/)、Crewの共有記録を扱う [session-graph](skills/session-graph/)、採用済みrepositoryを扱う [relaygraph](skills/relaygraph/)、明示的な文章推敲用の [japanese-tech-writing-review](skills/japanese-tech-writing-review/) と [natural-japanese](skills/natural-japanese/) である。導入時はSkill本文とmetadataを揃える。
+このrepositoryで保守するのは、UIの [design-ui-information](skills/design-ui-information/)、Crewの共有記録を扱う [session-graph](skills/session-graph/)、採用済みrepositoryを扱う [relaygraph](skills/relaygraph/)、明示的な文章推敲用の [japanese-tech-writing-review](skills/japanese-tech-writing-review/) と [natural-japanese](skills/natural-japanese/) である。導入時はSkill本文とmetadataを揃える。
 
 `natural-japanese` の[同期元](https://github.com/coji/natural-japanese)・commit・licenseは [NOTICE](skills/natural-japanese/NOTICE) と [LICENSE](skills/natural-japanese/LICENSE) を参照。
 
 `disable-model-invocation: true` のSkillは利用者の明示呼出しに限る。
+
+## このrepositoryのGit pre-commit
+
+この配布元のcheckoutで、Python 3.12とPowerShell 7（`pwsh`）を使う。有効にする前に `git config --show-origin --get core.hooksPath` で既存の設定を確認し、別のhookがある場合は上書きせず併用方法を決める。このrepositoryの既存設定と競合しなければ `git config --local core.hooksPath .githooks` で有効化できる。同じGit repositoryのworktreeにも影響する。設定を変えずに一度だけ使う場合は `git -c core.hooksPath=.githooks commit`、事前に同じ検査を手動で行う場合は `python -B -X utf8 scripts/check-repo.py --staged` を使う。
+
+staged差分の空白・競合マーカーと、このrepositoryの検査スクリプトで追加・変更したPython宣言のdocstringを検査する。外部由来の `natural-japanese` はdocstring検査に含めず、関連する変更ではPythonの構文と同梱fixtureによる実行例を確認する。設定例・通知hookの変更では、公開の設定例とテスト用入力で入出力を確認する。本文コメントの意味はreviewで確認する。CIは変更差分を検査し、Windows・Ubuntuで維持対象の検査を実行する。Git hookはClaudeの実行時設定とは別で、チェックアウトしただけでは有効にならない。
 
 ## 配布時の確認
 

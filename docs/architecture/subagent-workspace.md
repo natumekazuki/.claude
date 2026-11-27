@@ -34,4 +34,4 @@ Claude Codeの `Agent` には目的・担当範囲・成果・操作権限と、
 
 調査・専門reviewなど読み取りだけを許す依頼は [`read-only`](../../agents/read-only.md) を使う。起動時に実際のtoolがRead・Glob・Grepだけであることを確認する。permissionModeや汎用担当への文面だけでは、shell・編集・MCP writeを制限できない。同名のproject・managed定義が優先される場合も実体を確かめる。read-only担当も必要な判断に合わせてSonnet/medium、手順確定はSonnet/high、高度判断は非Opus親からOpus/mediumを選べる。必要な構成が使えなければ、その委譲に依存する判定を保留する。
 
-起動には現在のtool schemaを使い、実model・effortと権限を確かめる。配布設定の開始値と優先順位は[Claudeの設定案内](../../README.md#modelと担当)を参照する。通知hookは操作やmodelを制限しない。Agentの完了通知で受け取り、必要な根拠と未解決だけを親へ返す。親は共有の変更を保護し、統合・最終確認を行う。変更testの独立審査はruntimeの `review-test-value` Skillに従い、親や汎用担当の自己評価で代替しない。
+起動には現在のtool schemaを使い、実model・effortと権限を確かめる。配布設定の開始値と優先順位は[Claudeの設定案内](../../README.md#modelと担当)を参照する。通知hookは操作やmodelを制限しない。Agentの完了通知で受け取り、必要な根拠と未解決だけを親へ返す。親は共有の変更を保護し、統合・最終確認を行う。
