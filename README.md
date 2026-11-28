@@ -22,7 +22,7 @@
 - 維持するのは各タグのリリースノートで明示した利用者向け契約であり、実装全体ではない。
 - 破壊的な契約変更はmajor、互換な変更はminorまたはpatchを上げて新しいタグへ記録する。リリースごとに [一覧](docs/releases/README.md) と `docs/releases/vMAJOR.MINOR.PATCH.md` を更新し、変更内容とその互換性・移行・利用・安全上の影響を記録する。
 
-統合先は `master`。GitHub Releaseと版別ノートは同じタグで公開する。公開版の変更は[版別ノート](docs/releases/README.md)を参照する。Skill名・導入と配置の入口・Session GraphのMCP利用方針も維持対象である。MCPのschema・認可はruntimeが定める。
+統合先は `master`。GitHub Releaseと版別ノートは同じタグで公開する。公開版の変更は[版別ノート](docs/releases/README.md)を参照する。配布するSkill名と導入・配置の入口も維持対象である。MCPのschema・認可はruntimeが定める。
 
 ### この設定ホームでGit管理するもの
 
@@ -42,7 +42,8 @@ model・tool・設定形式など製品固有の機構は各製品に合わせ�
 
 - `CLAUDE.md`、`docs/guides/` 全体、`docs/architecture/subagent-workspace.md`、[Glossaryの接続・障害調査runbook](docs/runbooks/withmate-repository-glossary.md) を揃える。別repositoryのrootと下位ディレクトリから、実際に読んだ共通入口・詳細と、そのrepository固有の管理先・互換性定義を確認する。参照が欠けたら配置を修復し、cwdや別の `CLAUDE_CONFIG_DIR` の同名文書で埋めない。
 
-- WithMateのGlossary／Session Graph／SessionのHTTP接続とmanaged `withmate-glossary` SkillはWithMateが供給する。通常の導入で手動登録・forkや短命tokenの永続化はしない。Glossaryの手動STDIOはrunbookの開発・診断用途に限る。通常子の選定・配送は[協同guide](docs/guides/withmate-collaboration.md)、Worktreeの配置先決定と実体の確認は[作業領域guide](docs/architecture/subagent-workspace.md#git-worktreeの配置)に従う。端末固有の方針ファイルは配布・自動移行しない。
+- WithMateのGlossary／SessionのHTTP接続とmanaged `withmate-glossary` SkillはWithMateが供給する。通常の導入で手動登録・forkや短命tokenの永続化はしない。Glossaryの手動STDIOはrunbookの開発・診断用途に限る。通常子の選定・配送は[協同guide](docs/guides/withmate-collaboration.md)、Worktreeの配置先決定と実体の確認は[作業領域guide](docs/architecture/subagent-workspace.md#git-worktreeの配置)に従う。端末固有の方針ファイルは配布・自動移行しない。
+- WithMateでの[メモと共有資料](docs/guides/withmate.md#sessionfolderとcrew-folder)、[自Sessionの固定指示](docs/guides/withmate.md#自sessionのsession-instructions)、[merge先別のPR経路と承認条件](docs/guides/development.md#withmateでのmerge)は各guideに従う。
 
 ### 導入と更新
 
@@ -60,7 +61,7 @@ model・tool・設定形式など製品固有の機構は各製品に合わせ�
 
 ## 会話をまたぐ記憶
 
-設定例の `autoMemoryEnabled: false` で[auto memory](https://code.claude.com/docs/en/memory#enable-or-disable-auto-memory)を無効にし、個人agentにもpersistent memoryを設定しない。既存の記憶を消す設定ではなく、明示的なCLAUDE.mdの読込やWithMateのSession Graphを置き換えない。実効状態は `/memory` で確認する。
+設定例の `autoMemoryEnabled: false` で[auto memory](https://code.claude.com/docs/en/memory#enable-or-disable-auto-memory)を無効にし、個人agentにもpersistent memoryを設定しない。既存の記憶を消す設定ではなく、明示的なCLAUDE.mdの読込やWithMateの[自Sessionの固定指示](docs/guides/withmate.md#自sessionのsession-instructions)とは別である。実効状態は `/memory` で確認する。
 
 ## MCP接続
 
@@ -81,7 +82,7 @@ Claude nativeの開始値は[設定例](settings.example.json)の親Sonnet 5.5/m
 
 ## Skillの配布
 
-このrepositoryで保守するのは、UIの [design-ui-information](skills/design-ui-information/)、Crewの共有記録を扱う [session-graph](skills/session-graph/)、採用済みrepositoryを扱う [relaygraph](skills/relaygraph/)、明示的な文章推敲用の [japanese-tech-writing-review](skills/japanese-tech-writing-review/) と [natural-japanese](skills/natural-japanese/) である。導入時はSkill本文とmetadataを揃える。
+このrepositoryで保守するのは、UIの [design-ui-information](skills/design-ui-information/)、採用済みrepositoryを扱う [relaygraph](skills/relaygraph/)、明示的な文章推敲用の [japanese-tech-writing-review](skills/japanese-tech-writing-review/) と [natural-japanese](skills/natural-japanese/) である。導入時はSkill本文とmetadataを揃える。
 
 `natural-japanese` の[同期元](https://github.com/coji/natural-japanese)・commit・licenseは [NOTICE](skills/natural-japanese/NOTICE) と [LICENSE](skills/natural-japanese/LICENSE) を参照。
 

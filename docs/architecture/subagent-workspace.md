@@ -16,7 +16,7 @@ Git管理下の通常子にはreviewでも専用Worktreeを用い、並行作業
 
 1. WithMateでは対象repository・branchを `session.resolve_worktree` で解決する。利用可能な既存登録を優先し、返された配置先を使う。未設定なら配置に必要な不足だけ確認する。今回限りの指定は新規候補にだけ適用し、保存方針・既存登録を変更しない。SessionFolder・Crew Folderからpathを組み立てない。
 2. 配置候補は実体ではない。直接親が分岐元のbranch・commit、実体とbranch、他Sessionの占有、未コミット変更を確認して必要なGit操作を行う。同じbranchをforceで複数checkoutしない。既存領域の移設・削除・上書きは準備の範囲外。追加writeが要るなら専用の狭い範囲で通常の承認を求め、拒否を権限拡大で迂回しない。
-3. 子へ渡すのは利用可能と確かめたWorkspace。WithMateはGitの作成・統合を代行しない。実体・branch・占有が変わった事情がなければ確認結果を再利用できる。
+3. 子へ渡すのは利用可能と確かめたWorkspace。Worktreeの準備や子の作成で変更が自動統合されることはない。作業branchのmergeは[merge先別のPR経路と承認条件](../guides/development.md#withmateでのmerge)に従う。実体・branch・占有が変わった事情がなければ確認結果を再利用できる。
 
 ## 非Gitの作業領域
 
@@ -34,10 +34,10 @@ Git管理下の通常子にはreviewでも専用Worktreeを用い、並行作業
 
 並列実装の委譲前には[割当てと受入](#並列実装の割当てと受入)の責任を確認する。
 
-Claude Codeの `Agent` には目的・担当範囲・成果・操作権限と、実際に読める対象path、SessionFolder、必要な採用判断・維持契約を渡す。親の履歴や別Sessionのbindingは仮定しない。共有判断には[設計guide](../guides/design-decisions.md)、reviewには[統合基準](../guides/development.md#統合優先修正分離)を添える。子が取得できないGraph・Glossaryの情報は親が権限内で取得・記録する。
+Claude Codeの `Agent` には目的・担当範囲・成果・操作権限と、実際に読める対象path、利用するSessionFolderがあればその場所、必要な採用判断・維持契約を渡す。親の履歴や別Sessionのbindingは仮定しない。共有判断には[設計guide](../guides/design-decisions.md)、reviewには[統合基準](../guides/development.md#統合優先修正分離)を添える。Glossaryのbindingを持たない子には、親が権限内で必要な用語情報を取得して渡す。
 
 担当は [`agents/`](../../agents/) の定義から、必要な判断と結果で選ぶ。通常の調査・設計・実装は `general_sonnet`、手順と期待結果が定まった作業は `general_sonnet_execution`。難しい反例や契約間の矛盾は非Opus親から問題を絞って `general_opus` へ渡せる。Opus親は自分で判断し、Opus子へ委譲しない。下位modelの試行を条件にはしない。
 
 調査・専門reviewなど読み取りだけを許す依頼は [`read-only`](../../agents/read-only.md) を使う。起動時に実際のtoolがRead・Glob・Grepだけであることを確認する。permissionModeや汎用担当への文面だけでは、shell・編集・MCP writeを制限できない。同名のproject・managed定義が優先される場合も実体を確かめる。read-only担当も必要な判断に合わせてSonnet/medium、手順確定はSonnet/high、高度判断は非Opus親からOpus/mediumを選べる。必要な構成が使えなければ、その委譲に依存する判定を保留する。
 
-起動には現在のtool schemaを使い、実model・effortと権限を確かめる。配布設定の開始値と優先順位は[Claudeの設定案内](../../README.md#modelと担当)を参照する。通知hookは操作やmodelを制限しない。Agentの完了通知で受け取り、必要な根拠と未解決だけを親へ返す。親は共有の変更を保護し、統合・最終確認を行う。
+起動には現在のtool schemaを使い、実model・effortと権限を確かめる。配布設定の開始値と優先順位は[Claudeの設定案内](../../README.md#modelとrole)を参照する。通知hookは操作やmodelを制限しない。Agentの完了通知で受け取り、必要な根拠と未解決だけを親へ返す。親は共有の変更を保護し、統合・最終確認を行う。
